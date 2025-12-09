@@ -25,13 +25,13 @@ Este projeto é bem simples, respondendo algumas perguntas específicas sobre o 
 
 Você pode ver o aplicativo funcionando ao vivo clicando no link abaixo:
 
-https://alexialuzdeferro.github.io/Quizz--Pombagiras-/
+https://alexialuzdeferro.github.io/pombagira-revelada/
 
 ---
 
 ## 👩‍💻 Desenvolvido por
 
-## Alexia Tsan
+## Alexia Melusine
 
 ---
 
