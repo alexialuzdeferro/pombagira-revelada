@@ -4,9 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Oráculo Sagrado das Pombagiras 🔮</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --primary-glow: #ff1744;
+      --secondary-glow: #ff6b35;
+      --gold: #ffd700;
+      --correct-color: #00ff88;
+      --wrong-color: #ff0044;
+    }
     
     body {
       font-family: 'Cinzel', serif;
@@ -15,6 +23,15 @@
       min-height: 100vh;
       overflow-x: hidden;
       position: relative;
+      transition: background 1s ease;
+    }
+
+    body.correct-answer {
+      background: radial-gradient(ellipse at center, #0d2d1a 0%, #061a0d 50%, #000000 100%);
+    }
+
+    body.wrong-answer {
+      background: radial-gradient(ellipse at center, #3d0000 0%, #2a0000 50%, #000000 100%);
     }
 
     /* Canvas de partículas */
@@ -28,6 +45,40 @@
       z-index: 0;
     }
 
+    /* Borda luminosa da tela */
+    .screen-glow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 5;
+      box-shadow: inset 0 0 100px rgba(255, 23, 68, 0.3);
+      transition: box-shadow 0.5s ease;
+    }
+
+    .screen-glow.correct {
+      box-shadow: inset 0 0 150px rgba(0, 255, 136, 0.5);
+      animation: correctPulse 0.5s ease;
+    }
+
+    .screen-glow.wrong {
+      box-shadow: inset 0 0 150px rgba(255, 0, 68, 0.6);
+      animation: wrongShake 0.5s ease;
+    }
+
+    @keyframes correctPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    @keyframes wrongShake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-10px); }
+      40%, 80% { transform: translateX(10px); }
+    }
+
     /* Container principal */
     .container {
       position: relative;
@@ -38,99 +89,272 @@
       text-align: center;
     }
 
+    /* Mensagem de devoção */
+    .devotion-message {
+      font-size: 0.9rem;
+      color: var(--gold);
+      opacity: 0.8;
+      margin-bottom: 10px;
+      font-style: italic;
+      animation: devotionFloat 4s ease-in-out infinite;
+    }
+
+    @keyframes devotionFloat {
+      0%, 100% { transform: translateY(0); opacity: 0.8; }
+      50% { transform: translateY(-5px); opacity: 1; }
+    }
+
     /* Título principal */
     h1 {
       font-family: 'Dancing Script', cursive;
       color: #ff6b35;
       font-size: clamp(2rem, 5vw, 3.5rem);
-      text-shadow: 0 0 20px #ff6b35, 2px 2px 4px #000;
-      margin: 30px 0;
-      animation: titleGlow 3s ease-in-out infinite alternate;
+      text-shadow: 0 0 20px #ff6b35, 0 0 40px #ff1744, 0 0 60px #ff6b35;
+      margin: 20px 0;
+      animation: titleGlow 2s ease-in-out infinite alternate;
     }
 
     @keyframes titleGlow {
-      0% { text-shadow: 0 0 20px #ff6b35, 2px 2px 4px #000; }
-      100% { text-shadow: 0 0 30px #ff6b35, 0 0 40px #ff1744, 2px 2px 4px #000; }
+      0% { 
+        text-shadow: 0 0 20px #ff6b35, 0 0 40px #ff1744, 0 0 60px #ff6b35;
+        transform: scale(1);
+      }
+      100% { 
+        text-shadow: 0 0 30px #ff6b35, 0 0 60px #ff1744, 0 0 90px #ff6b35, 0 0 120px #ffd700;
+        transform: scale(1.02);
+      }
     }
 
-    /* Altar com velas */
+    /* Altar com velas melhorado */
     .altar {
       display: flex;
       justify-content: center;
       align-items: flex-end;
-      margin: 30px 0;
+      margin: 20px 0 30px;
       position: relative;
+      padding: 20px;
+    }
+
+    .altar::before {
+      content: '🌹';
+      position: absolute;
+      left: 10%;
+      bottom: 0;
+      font-size: 2rem;
+      animation: roseFloat 3s ease-in-out infinite;
+    }
+
+    .altar::after {
+      content: '🌹';
+      position: absolute;
+      right: 10%;
+      bottom: 0;
+      font-size: 2rem;
+      animation: roseFloat 3s ease-in-out infinite 0.5s;
+    }
+
+    @keyframes roseFloat {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-10px) rotate(5deg); }
     }
 
     .vela {
-      width: 20px;
-      height: 60px;
-      margin: 0 8px;
-      background: linear-gradient(to bottom, #8b0000 0%, #ff4444 50%, #8b0000 100%);
-      border-radius: 10px 10px 3px 3px;
+      width: 22px;
+      height: 70px;
+      margin: 0 12px;
+      background: linear-gradient(to bottom, #8b0000 0%, #ff2222 30%, #ff4444 50%, #ff2222 70%, #8b0000 100%);
+      border-radius: 12px 12px 4px 4px;
       position: relative;
-      animation: candleFlicker 2s infinite alternate;
-      box-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+      animation: candlePulse 1.5s infinite ease-in-out;
+      box-shadow: 0 0 20px rgba(255, 68, 68, 0.8), 0 0 40px rgba(255, 68, 68, 0.4);
     }
+
+    .vela:nth-child(1) { animation-delay: 0s; }
+    .vela:nth-child(2) { animation-delay: 0.2s; }
+    .vela:nth-child(3) { animation-delay: 0.4s; height: 80px; }
+    .vela:nth-child(4) { animation-delay: 0.6s; }
+    .vela:nth-child(5) { animation-delay: 0.8s; }
+    .vela:nth-child(6) { animation-delay: 1s; }
+    .vela:nth-child(7) { animation-delay: 1.2s; }
 
     .vela::before {
       content: '';
       position: absolute;
-      top: -2px;
+      top: -3px;
       left: 50%;
       transform: translateX(-50%);
-      width: 3px;
-      height: 8px;
-      background: #2c1810;
-      border-radius: 50%;
+      width: 4px;
+      height: 10px;
+      background: linear-gradient(to bottom, #1a1a1a, #3a3a3a);
+      border-radius: 2px;
     }
 
     .vela::after {
       content: '';
       position: absolute;
-      top: -15px;
+      top: -25px;
       left: 50%;
       transform: translateX(-50%);
-      width: 8px;
-      height: 15px;
-      background: radial-gradient(ellipse at center, #ffeb3b 0%, #ff9800 40%, #ff5722 70%, transparent 100%);
+      width: 14px;
+      height: 25px;
+      background: radial-gradient(ellipse at bottom, #fff 0%, #ffeb3b 20%, #ff9800 40%, #ff5722 60%, #ff1744 80%, transparent 100%);
       border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-      animation: flame 1.5s infinite ease-in-out alternate;
+      animation: flameDance 0.3s infinite ease-in-out alternate;
+      box-shadow: 0 0 20px #ff9800, 0 0 40px #ff5722, 0 0 60px #ff1744;
     }
 
-    @keyframes candleFlicker {
-      0% { transform: translateY(0) rotate(-0.5deg); }
-      100% { transform: translateY(-2px) rotate(0.5deg); }
+    @keyframes candlePulse {
+      0%, 100% { 
+        transform: scaleY(1);
+        box-shadow: 0 0 20px rgba(255, 68, 68, 0.8), 0 0 40px rgba(255, 68, 68, 0.4);
+      }
+      50% { 
+        transform: scaleY(1.02);
+        box-shadow: 0 0 30px rgba(255, 68, 68, 1), 0 0 60px rgba(255, 68, 68, 0.6);
+      }
     }
 
-    @keyframes flame {
+    @keyframes flameDance {
       0% { 
-        transform: translateX(-50%) rotate(-2deg) scale(1);
+        transform: translateX(-50%) rotate(-8deg) scaleY(0.9) scaleX(0.95);
         opacity: 0.9;
       }
       100% { 
-        transform: translateX(-50%) rotate(2deg) scale(1.1);
+        transform: translateX(-50%) rotate(8deg) scaleY(1.1) scaleX(1.05);
         opacity: 1;
       }
     }
 
+    /* Resposta correta - velas verdes */
+    .vela.correct-glow {
+      background: linear-gradient(to bottom, #004d00 0%, #00aa44 30%, #00ff88 50%, #00aa44 70%, #004d00 100%);
+      box-shadow: 0 0 30px rgba(0, 255, 136, 1), 0 0 60px rgba(0, 255, 136, 0.6);
+      animation: correctCandle 0.5s ease;
+    }
+
+    .vela.correct-glow::after {
+      background: radial-gradient(ellipse at bottom, #fff 0%, #aaffaa 20%, #00ff88 40%, #00cc66 60%, #009944 80%, transparent 100%);
+      box-shadow: 0 0 30px #00ff88, 0 0 60px #00cc66, 0 0 90px #009944;
+    }
+
+    /* Resposta errada - velas mais vermelhas */
+    .vela.wrong-glow {
+      background: linear-gradient(to bottom, #4d0000 0%, #aa0022 30%, #ff0044 50%, #aa0022 70%, #4d0000 100%);
+      box-shadow: 0 0 30px rgba(255, 0, 68, 1), 0 0 60px rgba(255, 0, 68, 0.6);
+      animation: wrongCandle 0.5s ease;
+    }
+
+    .vela.wrong-glow::after {
+      background: radial-gradient(ellipse at bottom, #fff 0%, #ffaaaa 20%, #ff4444 40%, #ff0044 60%, #aa0022 80%, transparent 100%);
+      box-shadow: 0 0 30px #ff0044, 0 0 60px #cc0033, 0 0 90px #990022;
+    }
+
+    @keyframes correctCandle {
+      0%, 100% { transform: scaleY(1); }
+      50% { transform: scaleY(1.2); }
+    }
+
+    @keyframes wrongCandle {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    /* Contador de fé */
+    .faith-counter {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin: 20px 0;
+      font-size: 1rem;
+    }
+
+    .faith-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 20px;
+      border: 2px solid var(--gold);
+      transition: all 0.3s ease;
+    }
+
+    .faith-item.correct-faith {
+      border-color: var(--correct-color);
+      box-shadow: 0 0 20px var(--correct-color);
+      animation: faithPulse 0.5s ease;
+    }
+
+    .faith-item.wrong-faith {
+      border-color: var(--wrong-color);
+      box-shadow: 0 0 20px var(--wrong-color);
+    }
+
+    @keyframes faithPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .faith-icon {
+      font-size: 1.5rem;
+    }
+
+    .faith-value {
+      font-weight: bold;
+      color: var(--gold);
+      font-size: 1.2rem;
+    }
+
     /* Área do quiz */
     .quiz-area {
-      background: rgba(0, 0, 0, 0.7);
-      border: 2px solid #ff6b35;
-      border-radius: 15px;
+      background: linear-gradient(135deg, rgba(20, 0, 0, 0.9) 0%, rgba(40, 0, 10, 0.9) 50%, rgba(20, 0, 0, 0.9) 100%);
+      border: 3px solid;
+      border-image: linear-gradient(45deg, #ff6b35, #ffd700, #ff1744, #ffd700, #ff6b35) 1;
+      border-radius: 20px;
       padding: 30px;
-      margin: 30px 0;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 0 30px rgba(255, 107, 53, 0.3);
+      margin: 20px 0;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 0 50px rgba(255, 107, 53, 0.4), inset 0 0 30px rgba(255, 215, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .quiz-area::before {
+      content: '✨';
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 1.5rem;
+      animation: sparkle 2s infinite;
+    }
+
+    .quiz-area::after {
+      content: '✨';
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 1.5rem;
+      animation: sparkle 2s infinite 0.5s;
+    }
+
+    @keyframes sparkle {
+      0%, 100% { opacity: 0.5; transform: scale(1) rotate(0deg); }
+      50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
     }
 
     .question {
       font-size: 1.4rem;
       margin-bottom: 25px;
-      color: #ffdd44;
-      text-shadow: 1px 1px 3px #000;
-      line-height: 1.4;
+      color: var(--gold);
+      text-shadow: 0 0 10px var(--gold), 2px 2px 4px #000;
+      line-height: 1.5;
+      animation: questionAppear 0.5s ease;
+    }
+
+    @keyframes questionAppear {
+      0% { opacity: 0; transform: translateY(-20px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
 
     .options {
@@ -141,11 +365,11 @@
     }
 
     .option {
-      padding: 15px 25px;
-      background: linear-gradient(45deg, #8b0000, #ff1744, #8b0000);
-      background-size: 200% 200%;
-      border: 2px solid #ff6b35;
-      border-radius: 25px;
+      padding: 18px 30px;
+      background: linear-gradient(45deg, #8b0000, #cc1133, #ff1744, #cc1133, #8b0000);
+      background-size: 300% 300%;
+      border: 3px solid var(--secondary-glow);
+      border-radius: 30px;
       color: white;
       font-size: 1.1rem;
       font-family: 'Cinzel', serif;
@@ -153,7 +377,8 @@
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
-      animation: optionShine 3s infinite;
+      animation: optionShine 4s infinite linear;
+      box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
     }
 
     .option::before {
@@ -163,8 +388,8 @@
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.6s;
     }
 
     .option:hover::before {
@@ -172,61 +397,144 @@
     }
 
     .option:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 8px 25px rgba(255, 107, 53, 0.5);
+      transform: translateY(-5px) scale(1.03);
+      box-shadow: 0 10px 40px rgba(255, 107, 53, 0.6), 0 0 20px rgba(255, 215, 0, 0.4);
+      border-color: var(--gold);
       background-position: 100% 0;
     }
 
+    .option.correct {
+      background: linear-gradient(45deg, #004d00, #00aa44, #00ff88, #00aa44, #004d00);
+      border-color: var(--correct-color);
+      box-shadow: 0 0 40px var(--correct-color);
+      animation: correctOption 0.8s ease;
+    }
+
+    .option.wrong {
+      background: linear-gradient(45deg, #4d0000, #aa0022, #ff0044, #aa0022, #4d0000);
+      border-color: var(--wrong-color);
+      box-shadow: 0 0 40px var(--wrong-color);
+      animation: wrongOption 0.5s ease;
+    }
+
+    @keyframes correctOption {
+      0% { transform: scale(1); }
+      25% { transform: scale(1.1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes wrongOption {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-15px) rotate(-2deg); }
+      40%, 80% { transform: translateX(15px) rotate(2deg); }
+    }
+
     @keyframes optionShine {
-      0%, 100% { background-position: 0% 50%; }
+      0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Feedback de resposta */
+    .feedback {
+      font-size: 1.5rem;
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 15px;
+      display: none;
+      animation: feedbackPop 0.5s ease;
+    }
+
+    .feedback.show {
+      display: block;
+    }
+
+    .feedback.correct-feedback {
+      background: rgba(0, 255, 136, 0.2);
+      border: 2px solid var(--correct-color);
+      color: var(--correct-color);
+    }
+
+    .feedback.wrong-feedback {
+      background: rgba(255, 0, 68, 0.2);
+      border: 2px solid var(--wrong-color);
+      color: var(--wrong-color);
+    }
+
+    @keyframes feedbackPop {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
     }
 
     /* Progresso */
     .progress-container {
       margin: 20px 0;
-      background: rgba(0, 0, 0, 0.5);
-      border-radius: 10px;
-      padding: 5px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 15px;
+      padding: 8px;
+      border: 2px solid var(--secondary-glow);
     }
 
     .progress-bar {
-      height: 10px;
-      background: linear-gradient(90deg, #ff6b35, #ff1744);
-      border-radius: 5px;
+      height: 15px;
+      background: linear-gradient(90deg, #ff1744, #ff6b35, #ffd700, #ff6b35, #ff1744);
+      background-size: 200% 100%;
+      border-radius: 10px;
       transition: width 0.5s ease;
-      box-shadow: 0 0 10px rgba(255, 107, 53, 0.8);
+      box-shadow: 0 0 20px rgba(255, 107, 53, 1);
+      animation: progressGlow 2s infinite linear;
+    }
+
+    @keyframes progressGlow {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
     }
 
     .progress-text {
-      margin-top: 10px;
-      font-size: 1rem;
-      color: #ffdd44;
+      margin-top: 12px;
+      font-size: 1.1rem;
+      color: var(--gold);
+      text-shadow: 0 0 10px var(--gold);
     }
 
     /* Botão final */
     .reveal-btn {
-      padding: 20px 40px;
-      font-size: 1.3rem;
-      background: linear-gradient(45deg, #8b0000, #ff1744);
+      padding: 25px 50px;
+      font-size: 1.4rem;
+      background: linear-gradient(45deg, #8b0000, #ff1744, #ffd700, #ff1744, #8b0000);
+      background-size: 300% 300%;
       color: white;
-      border: 3px solid #ff6b35;
-      border-radius: 30px;
+      border: 4px solid var(--gold);
+      border-radius: 40px;
       cursor: pointer;
       font-family: 'Cinzel', serif;
-      font-weight: 600;
+      font-weight: 700;
       transition: all 0.3s ease;
       margin: 30px 0;
       display: none;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      box-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
+      letter-spacing: 2px;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.5), 0 0 60px rgba(255, 107, 53, 0.3);
+      animation: revealBtnPulse 2s infinite ease-in-out;
+    }
+
+    @keyframes revealBtnPulse {
+      0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.5), 0 0 60px rgba(255, 107, 53, 0.3);
+      }
+      50% { 
+        transform: scale(1.05);
+        box-shadow: 0 0 50px rgba(255, 215, 0, 0.8), 0 0 100px rgba(255, 107, 53, 0.5);
+      }
     }
 
     .reveal-btn:hover {
       transform: scale(1.1) rotate(1deg);
-      box-shadow: 0 0 40px rgba(255, 107, 53, 0.8);
-      background: linear-gradient(45deg, #ff1744, #8b0000);
+      box-shadow: 0 0 60px rgba(255, 215, 0, 1), 0 0 120px rgba(255, 107, 53, 0.8);
+      background-position: 100% 0;
     }
 
     /* Resultado */
@@ -235,35 +543,58 @@
       display: none;
     }
 
+    .gratitude-message {
+      font-size: 1.1rem;
+      color: var(--gold);
+      margin-bottom: 20px;
+      font-style: italic;
+      text-shadow: 0 0 10px var(--gold);
+      animation: gratitudeGlow 3s infinite alternate;
+    }
+
+    @keyframes gratitudeGlow {
+      0% { opacity: 0.8; }
+      100% { opacity: 1; text-shadow: 0 0 20px var(--gold), 0 0 40px var(--secondary-glow); }
+    }
+
     .pombagira-name {
       font-family: 'Dancing Script', cursive;
-      font-size: 2.5rem;
-      color: #ffdd00;
-      text-shadow: 0 0 20px #ffdd00;
+      font-size: 3rem;
+      color: var(--gold);
+      text-shadow: 0 0 30px var(--gold), 0 0 60px var(--secondary-glow);
       margin: 20px 0;
       animation: resultGlow 2s ease-in-out infinite alternate;
     }
 
     @keyframes resultGlow {
-      0% { text-shadow: 0 0 20px #ffdd00; }
-      100% { text-shadow: 0 0 30px #ffdd00, 0 0 40px #ff6b35; }
+      0% { 
+        text-shadow: 0 0 30px var(--gold), 0 0 60px var(--secondary-glow);
+        transform: scale(1);
+      }
+      100% { 
+        text-shadow: 0 0 50px var(--gold), 0 0 80px var(--secondary-glow), 0 0 100px #ff1744;
+        transform: scale(1.03);
+      }
     }
 
     .pombagira-image {
-      width: 250px;
-      height: 250px;
+      width: 280px;
+      height: 280px;
       border-radius: 50%;
-      border: 5px solid #ff6b35;
-      box-shadow: 0 0 40px rgba(255, 107, 53, 0.8);
-      animation: imageReveal 1s ease forwards;
+      border: 6px solid var(--gold);
+      box-shadow: 0 0 60px rgba(255, 215, 0, 0.8), 0 0 100px rgba(255, 107, 53, 0.5);
+      animation: imageReveal 1.5s ease forwards, imageGlow 3s infinite alternate 1.5s;
       margin: 20px 0;
       object-fit: cover;
     }
 
     @keyframes imageReveal {
       0% { 
-        transform: scale(0) rotate(180deg);
+        transform: scale(0) rotate(360deg);
         opacity: 0;
+      }
+      60% {
+        transform: scale(1.1) rotate(-10deg);
       }
       100% { 
         transform: scale(1) rotate(0deg);
@@ -271,33 +602,94 @@
       }
     }
 
+    @keyframes imageGlow {
+      0% { box-shadow: 0 0 60px rgba(255, 215, 0, 0.8), 0 0 100px rgba(255, 107, 53, 0.5); }
+      100% { box-shadow: 0 0 80px rgba(255, 215, 0, 1), 0 0 150px rgba(255, 107, 53, 0.8); }
+    }
+
     .pombagira-description {
       font-size: 1.2rem;
-      line-height: 1.6;
+      line-height: 1.7;
       color: #fff;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 20px;
-      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(20, 0, 0, 0.8), rgba(40, 0, 10, 0.8));
+      padding: 25px;
+      border-radius: 15px;
       margin-top: 20px;
-      border-left: 5px solid #ff6b35;
+      border-left: 6px solid var(--gold);
+      box-shadow: 0 0 30px rgba(255, 107, 53, 0.3);
     }
 
     .restart-btn {
-      padding: 15px 30px;
-      font-size: 1.1rem;
-      background: linear-gradient(45deg, #4a4a4a, #666);
+      padding: 18px 40px;
+      font-size: 1.2rem;
+      background: linear-gradient(45deg, #4a4a4a, #666, #888, #666, #4a4a4a);
+      background-size: 300% 300%;
       color: white;
-      border: 2px solid #888;
-      border-radius: 20px;
+      border: 3px solid #aaa;
+      border-radius: 25px;
       cursor: pointer;
       font-family: 'Cinzel', serif;
       margin-top: 30px;
       transition: all 0.3s ease;
+      animation: restartShine 4s infinite linear;
+    }
+
+    @keyframes restartShine {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 300% 50%; }
     }
 
     .restart-btn:hover {
-      background: linear-gradient(45deg, #666, #4a4a4a);
-      transform: scale(1.05);
+      background: linear-gradient(45deg, #666, #888);
+      transform: scale(1.08);
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+    }
+
+    /* Efeito de celebração */
+    .celebration {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 100;
+      display: none;
+    }
+
+    .celebration.active {
+      display: block;
+      animation: celebrationFlash 1s ease;
+    }
+
+    @keyframes celebrationFlash {
+      0%, 100% { background: transparent; }
+      10%, 30%, 50% { background: rgba(255, 215, 0, 0.2); }
+      20%, 40% { background: transparent; }
+    }
+
+    /* Mensagens de fé */
+    .faith-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2rem;
+      color: var(--gold);
+      text-shadow: 0 0 30px var(--gold);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .faith-message.show {
+      animation: faithMessageShow 1.5s ease forwards;
+    }
+
+    @keyframes faithMessageShow {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      30% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
     }
 
     /* Responsividade */
@@ -305,27 +697,38 @@
       .container { padding: 15px; }
       .quiz-area { padding: 20px; }
       .question { font-size: 1.2rem; }
-      .option { padding: 12px 20px; font-size: 1rem; }
-      .vela { width: 15px; height: 45px; }
-      .pombagira-image { width: 200px; height: 200px; }
+      .option { padding: 14px 20px; font-size: 1rem; }
+      .vela { width: 16px; height: 55px; margin: 0 8px; }
+      .pombagira-image { width: 220px; height: 220px; }
+      .faith-counter { gap: 15px; flex-wrap: wrap; }
+      .faith-item { padding: 8px 15px; }
     }
 
     /* Animação de entrada */
     .fade-in {
-      animation: fadeIn 0.5s ease forwards;
+      animation: fadeIn 0.6s ease forwards;
     }
 
     @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(20px); }
-      100% { opacity: 1; transform: translateY(0); }
+      0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
     }
   </style>
 </head>
 <body>
   <canvas id="particles"></canvas>
+  <div class="screen-glow" id="screenGlow"></div>
+  <div class="celebration" id="celebration"></div>
+  <div class="faith-message" id="faithMessage"></div>
   
   <div class="container">
+    <div class="devotion-message">
+      ✨ "Que a luz das velas ilumine seu caminho espiritual" ✨
+    </div>
+
     <div class="altar">
+      <div class="vela"></div>
+      <div class="vela"></div>
       <div class="vela"></div>
       <div class="vela"></div>
       <div class="vela"></div>
@@ -335,32 +738,49 @@
 
     <h1>🔥 Oráculo Sagrado das Pombagiras 🔮</h1>
 
+    <div class="faith-counter">
+      <div class="faith-item" id="faithCorrect">
+        <span class="faith-icon">🙏</span>
+        <span>Fé:</span>
+        <span class="faith-value" id="faithValue">0</span>
+      </div>
+      <div class="faith-item" id="gratitudeItem">
+        <span class="faith-icon">💫</span>
+        <span>Gratidão:</span>
+        <span class="faith-value" id="gratitudeValue">0</span>
+      </div>
+    </div>
+
     <div class="progress-container">
       <div class="progress-bar" id="progressBar" style="width: 0%"></div>
-      <div class="progress-text" id="progressText">Questão 0 de 12</div>
+      <div class="progress-text" id="progressText">🕯️ Questão 0 de 12 🕯️</div>
     </div>
 
     <div class="quiz-area" id="quizArea">
-      <div class="question" id="question">Preparando o oráculo...</div>
+      <div class="question" id="question">Preparando o oráculo sagrado...</div>
+      <div class="feedback" id="feedback"></div>
       <div class="options" id="options"></div>
     </div>
 
     <button class="reveal-btn" id="revealBtn" onclick="revealPombagira()">
-      🔮 Revelar Minha Pombagira 🔮
+      🔮 Revelar Minha Pombagira Guia 🔮
     </button>
 
     <div class="result-area" id="resultArea">
+      <div class="gratitude-message" id="gratitudeMessage">
+        🙏 "Gratidão pela jornada espiritual. Que sua fé seja renovada!" 🙏
+      </div>
       <div class="pombagira-name" id="pombagiraName"></div>
       <img class="pombagira-image" id="pombagiraImage" src="" alt="Pombagira">
       <div class="pombagira-description" id="pombagiraDescription"></div>
-      <button class="restart-btn" onclick="restartQuiz()">🔄 Consultar Novamente</button>
+      <button class="restart-btn" onclick="restartQuiz()">🔄 Consultar Novamente com Devoção</button>
     </div>
   </div>
 
   <script>
     const questions = [
       {
-        q: "Qual é o significado da saudação 'Laroyê Exu'?",
+        q: "🔥 Qual é o significado da saudação 'Laroyê Exu'?",
         options: [
           "Salve! Abram-se os caminhos!",
           "Boa sorte em todos os sentidos",
@@ -369,7 +789,7 @@
         answer: 0
       },
       {
-        q: "As Pombagiras são entidades espirituais ligadas principalmente a:",
+        q: "🌹 As Pombagiras são entidades espirituais ligadas principalmente a:",
         options: [
           "Mistérios do amor, sedução e justiça feminina",
           "Somente rituais de guerra",
@@ -378,7 +798,7 @@
         answer: 0
       },
       {
-        q: "Qual cor é mais tradicionalmente associada às Pombagiras?",
+        q: "❤️ Qual cor é mais tradicionalmente associada às Pombagiras?",
         options: [
           "Azul marinho",
           "Vermelho intenso",
@@ -387,7 +807,7 @@
         answer: 1
       },
       {
-        q: "Em qual local as Pombagiras manifestam maior força?",
+        q: "✨ Em qual local as Pombagiras manifestam maior força?",
         options: [
           "Encruzilhadas e cruzamentos",
           "Topos de montanhas",
@@ -396,7 +816,7 @@
         answer: 0
       },
       {
-        q: "Qual elemento é símbolo de poder das Pombagiras?",
+        q: "🌹 Qual elemento é símbolo de poder das Pombagiras?",
         options: [
           "Espadas douradas",
           "Tridentes de ferro",
@@ -405,7 +825,7 @@
         answer: 2
       },
       {
-        q: "O que é fundamental no relacionamento com as Pombagiras?",
+        q: "🙏 O que é fundamental no relacionamento com as Pombagiras?",
         options: [
           "Respeito, oferendas apropriadas e sinceridade",
           "Apenas velas coloridas",
@@ -414,7 +834,7 @@
         answer: 0
       },
       {
-        q: "Maria Padilha é conhecida como:",
+        q: "👑 Maria Padilha é conhecida como:",
         options: [
           "A Rainha das Encruzilhadas",
           "A Guardiã dos Mares",
@@ -423,7 +843,7 @@
         answer: 0
       },
       {
-        q: "As Pombagiras podem auxiliar principalmente em questões de:",
+        q: "💕 As Pombagiras podem auxiliar principalmente em questões de:",
         options: [
           "Amor, relacionamentos e autoestima feminina",
           "Somente negócios financeiros",
@@ -432,7 +852,7 @@
         answer: 0
       },
       {
-        q: "Qual bebida é tradicionalmente oferecida às Pombagiras?",
+        q: "🍾 Qual bebida é tradicionalmente oferecida às Pombagiras?",
         options: [
           "Água benta",
           "Champagne ou licor",
@@ -441,7 +861,7 @@
         answer: 1
       },
       {
-        q: "A Calunga representa:",
+        q: "⚖️ A Calunga representa:",
         options: [
           "O reino dos mistérios e da justiça espiritual",
           "Apenas alegria e festa",
@@ -450,7 +870,7 @@
         answer: 0
       },
       {
-        q: "Qual dia da semana é mais propício para rituais com Pombagiras?",
+        q: "🌙 Qual dia da semana é mais propício para rituais com Pombagiras?",
         options: [
           "Domingo",
           "Quarta-feira",
@@ -459,7 +879,7 @@
         answer: 2
       },
       {
-        q: "O perfume tradicionalmente associado às Pombagiras é:",
+        q: "🌺 O perfume tradicionalmente associado às Pombagiras é:",
         options: [
           "Lavanda suave",
           "Rosas vermelhas intensas",
@@ -471,27 +891,44 @@
 
     const pombagiras = [
       {
-        name: "Pombagira Maria Padilha",
+        name: "👑 Pombagira Maria Padilha 👑",
         description: "A Rainha das Encruzilhadas, senhora do amor e da sedução. Ela governa os mistérios femininos e ajuda em questões do coração, trazendo paixão e removendo obstáculos amorosos. Sua força reside na sabedoria feminina ancestral.",
         traits: "Elegante, poderosa, sedutora e justa. Protege as mulheres e ensina sobre o poder feminino.",
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250' viewBox='0 0 250 250'%3E%3Cdefs%3E%3CradialGradient id='bg' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' stop-color='%23ff1744'/%3E%3Cstop offset='100%25' stop-color='%23000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='125' cy='125' r='125' fill='url(%23bg)'/%3E%3Ctext x='125' y='135' text-anchor='middle' fill='%23ffdd00' font-size='24' font-family='serif'%3E👑 Maria Padilha 👑%3C/text%3E%3C/svg%3E"
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250' viewBox='0 0 250 250'%3E%3Cdefs%3E%3CradialGradient id='bg' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' stop-color='%23ff1744'/%3E%3Cstop offset='50%25' stop-color='%238b0000'/%3E%3Cstop offset='100%25' stop-color='%23000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='125' cy='125' r='125' fill='url(%23bg)'/%3E%3Ctext x='125' y='100' text-anchor='middle' fill='%23ffd700' font-size='40'%3E👑%3C/text%3E%3Ctext x='125' y='140' text-anchor='middle' fill='%23ffd700' font-size='16' font-family='serif'%3EMaria Padilha%3C/text%3E%3Ctext x='125' y='170' text-anchor='middle' fill='%23ff6b35' font-size='30'%3E🌹%3C/text%3E%3C/svg%3E"
       },
       {
-        name: "Pombagira Cigana",
+        name: "🔮 Pombagira Cigana 🔮",
         description: "A cigana dos caminhos, senhora da liberdade e da intuição. Ela traz sorte nos negócios, revela segredos através da cartomancia e protege os viajantes. Sua energia é livre como o vento.",
         traits: "Livre, intuitiva, misteriosa e protetora. Especialista em revelações e caminhos.",
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250' viewBox='0 0 250 250'%3E%3Cdefs%3E%3CradialGradient id='bg2' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' stop-color='%23ff6b35'/%3E%3Cstop offset='100%25' stop-color='%23000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='125' cy='125' r='125' fill='url(%23bg2)'/%3E%3Ctext x='125' y='135' text-anchor='middle' fill='%23ffdd00' font-size='20' font-family='serif'%3E🔮 Pombagira Cigana 🔮%3C/text%3E%3C/svg%3E"
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250' viewBox='0 0 250 250'%3E%3Cdefs%3E%3CradialGradient id='bg2' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' stop-color='%23ff6b35'/%3E%3Cstop offset='50%25' stop-color='%23cc3300'/%3E%3Cstop offset='100%25' stop-color='%23000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='125' cy='125' r='125' fill='url(%23bg2)'/%3E%3Ctext x='125' y='100' text-anchor='middle' fill='%23ffd700' font-size='40'%3E🔮%3C/text%3E%3Ctext x='125' y='140' text-anchor='middle' fill='%23ffd700' font-size='16' font-family='serif'%3EPombagira Cigana%3C/text%3E%3Ctext x='125' y='170' text-anchor='middle' fill='%23ff6b35' font-size='30'%3E✨%3C/text%3E%3C/svg%3E"
       },
       {
-        name: "Pombagira das Almas",
+        name: "✨ Pombagira das Almas ✨",
         description: "A guardiã das almas perdidas, senhora da justiça espiritual. Ela trabalha com energias profundas de transformação, ajudando na evolução espiritual e na resolução de questões cármicas antigas.",
         traits: "Profunda, transformadora, justa e espiritual. Trabalha com energias de renovação.",
-        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250' viewBox='0 0 250 250'%3E%3Cdefs%3E%3CradialGradient id='bg3' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' stop-color='%238b0000'/%3E%3Cstop offset='100%25' stop-color='%23000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='125' cy='125' r='125' fill='url(%23bg3)'/%3E%3Ctext x='125' y='135' text-anchor='middle' fill='%23ffdd00' font-size='18' font-family='serif'%3E✨ Pombagira das Almas ✨%3C/text%3E%3C/svg%3E"
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250' viewBox='0 0 250 250'%3E%3Cdefs%3E%3CradialGradient id='bg3' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' stop-color='%239933ff'/%3E%3Cstop offset='50%25' stop-color='%234d0099'/%3E%3Cstop offset='100%25' stop-color='%23000'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='125' cy='125' r='125' fill='url(%23bg3)'/%3E%3Ctext x='125' y='100' text-anchor='middle' fill='%23ffd700' font-size='40'%3E✨%3C/text%3E%3Ctext x='125' y='140' text-anchor='middle' fill='%23ffd700' font-size='14' font-family='serif'%3EPombagira das Almas%3C/text%3E%3Ctext x='125' y='170' text-anchor='middle' fill='%239933ff' font-size='30'%3E🕯️%3C/text%3E%3C/svg%3E"
       }
+    ];
+
+    const faithMessages = [
+      "🙏 Que sua fé seja fortalecida!",
+      "✨ A luz te guia!",
+      "🌹 Gratidão pela devoção!",
+      "💫 Seu caminho está aberto!",
+      "🔥 Axé! Força espiritual!",
+      "👑 A Rainha sorri para você!"
+    ];
+
+    const wrongMessages = [
+      "🕯️ Acenda mais uma vela de fé...",
+      "🙏 Continue em sua jornada...",
+      "✨ A sabedoria vem com a prática...",
+      "🌹 Não desanime, siga em frente!"
     ];
 
     let currentQuestion = 0;
     let score = 0;
+    let gratitudeScore = 0;
     let userAnswers = [];
 
     // Sistema de partículas melhorado
@@ -502,21 +939,30 @@
     const particles = [];
 
     class Particle {
-      constructor() {
+      constructor(special = false) {
         this.x = Math.random() * canvasWidth;
-        this.y = Math.random() * canvasHeight;
-        this.radius = Math.random() * 3 + 1;
-        this.speedY = Math.random() * 2 + 0.5;
-        this.speedX = (Math.random() - 0.5) * 0.5;
-        this.alpha = Math.random() * 0.6 + 0.2;
-        this.color = Math.random() > 0.5 ? 'rgba(255,107,53,' : 'rgba(255,23,68,';
+        this.y = special ? canvasHeight + 10 : Math.random() * canvasHeight;
+        this.radius = special ? Math.random() * 5 + 3 : Math.random() * 3 + 1;
+        this.speedY = special ? Math.random() * 5 + 3 : Math.random() * 2 + 0.5;
+        this.speedX = (Math.random() - 0.5) * (special ? 3 : 0.5);
+        this.alpha = Math.random() * 0.7 + 0.3;
+        this.special = special;
+        this.life = special ? 100 : Infinity;
+        
+        const colors = ['255,107,53', '255,23,68', '255,215,0', '255,68,68'];
+        this.colorBase = colors[Math.floor(Math.random() * colors.length)];
       }
 
       update() {
         this.y -= this.speedY;
         this.x += this.speedX;
         
-        if (this.y < -10) {
+        if (this.special) {
+          this.life--;
+          this.alpha = this.life / 100;
+        }
+        
+        if (this.y < -10 && !this.special) {
           this.y = canvasHeight + 10;
           this.x = Math.random() * canvasWidth;
         }
@@ -526,53 +972,119 @@
         ctx.globalAlpha = this.alpha;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = this.color + this.alpha + ')';
+        
+        const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+        gradient.addColorStop(0, `rgba(255, 255, 255, ${this.alpha})`);
+        gradient.addColorStop(0.5, `rgba(${this.colorBase}, ${this.alpha})`);
+        gradient.addColorStop(1, `rgba(${this.colorBase}, 0)`);
+        
+        ctx.fillStyle = gradient;
         ctx.fill();
       }
     }
 
-    // Criar partículas
-    for (let i = 0; i < 100; i++) {
+    // Criar partículas iniciais
+    for (let i = 0; i < 120; i++) {
       particles.push(new Particle());
     }
 
     function animateParticles() {
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-      particles.forEach(particle => {
+      
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const particle = particles[i];
         particle.update();
         particle.draw();
-      });
+        
+        if (particle.special && particle.life <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+      
       requestAnimationFrame(animateParticles);
     }
 
-    function createCelebrationParticles() {
-      for (let i = 0; i < 30; i++) {
+    function createCelebrationParticles(isCorrect) {
+      const count = isCorrect ? 40 : 20;
+      for (let i = 0; i < count; i++) {
         setTimeout(() => {
-          const celebrationParticle = {
-            x: Math.random() * canvasWidth,
-            y: canvasHeight,
-            radius: Math.random() * 6 + 3,
-            speedY: Math.random() * 4 + 2,
-            speedX: (Math.random() - 0.5) * 4,
-            alpha: 1,
-            color: `hsl(${Math.random() * 60 + 10}, 100%, 60%)`,
-            life: 100
-          };
-          particles.push(celebrationParticle);
-          
-          const interval = setInterval(() => {
-            celebrationParticle.life--;
-            celebrationParticle.alpha = celebrationParticle.life / 100;
-            if (celebrationParticle.life <= 0) {
-              particles.splice(particles.indexOf(celebrationParticle), 1);
-              clearInterval(interval);
-            }
-          }, 50);
-        }, i * 100);
+          const particle = new Particle(true);
+          if (isCorrect) {
+            particle.colorBase = '0,255,136';
+          } else {
+            particle.colorBase = '255,0,68';
+          }
+          particles.push(particle);
+        }, i * 30);
+      }
+    }
+
+    function createFinalCelebration() {
+      for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
+          const particle = new Particle(true);
+          particle.colorBase = ['255,215,0', '255,107,53', '255,23,68'][Math.floor(Math.random() * 3)];
+          particle.radius = Math.random() * 8 + 4;
+          particle.speedY = Math.random() * 6 + 4;
+          particles.push(particle);
+        }, i * 50);
       }
     }
 
     animateParticles();
+
+    function showFaithMessage(isCorrect) {
+      const faithMessage = document.getElementById('faithMessage');
+      const messages = isCorrect ? faithMessages : wrongMessages;
+      faithMessage.textContent = messages[Math.floor(Math.random() * messages.length)];
+      faithMessage.className = 'faith-message show';
+      
+      setTimeout(() => {
+        faithMessage.className = 'faith-message';
+      }, 1500);
+    }
+
+    function updateCandleEffects(isCorrect) {
+      const candles = document.querySelectorAll('.vela');
+      const effectClass = isCorrect ? 'correct-glow' : 'wrong-glow';
+      
+      candles.forEach((candle, index) => {
+        setTimeout(() => {
+          candle.classList.add(effectClass);
+        }, index * 50);
+      });
+      
+      setTimeout(() => {
+        candles.forEach(candle => {
+          candle.classList.remove('correct-glow', 'wrong-glow');
+        });
+      }, 1500);
+    }
+
+    function updateScreenGlow(isCorrect) {
+      const screenGlow = document.getElementById('screenGlow');
+      const body = document.body;
+      
+      screenGlow.className = 'screen-glow ' + (isCorrect ? 'correct' : 'wrong');
+      body.className = isCorrect ? 'correct-answer' : 'wrong-answer';
+      
+      setTimeout(() => {
+        screenGlow.className = 'screen-glow';
+        body.className = '';
+      }, 1000);
+    }
+
+    function showFeedback(isCorrect) {
+      const feedback = document.getElementById('feedback');
+      feedback.className = 'feedback show ' + (isCorrect ? 'correct-feedback' : 'wrong-feedback');
+      feedback.innerHTML = isCorrect 
+        ? '✨ Resposta Correta! Sua fé aumenta! ✨' 
+        : '🕯️ Resposta incorreta... Continue em devoção! 🕯️';
+      
+      setTimeout(() => {
+        feedback.className = 'feedback';
+      }, 1200);
+    }
 
     function loadQuestion() {
       if (currentQuestion >= questions.length) {
@@ -584,9 +1096,10 @@
       const progress = ((currentQuestion) / questions.length) * 100;
       
       document.getElementById('progressBar').style.width = progress + '%';
-      document.getElementById('progressText').textContent = `Questão ${currentQuestion + 1} de ${questions.length}`;
+      document.getElementById('progressText').textContent = `🕯️ Questão ${currentQuestion + 1} de ${questions.length} 🕯️`;
       
       document.getElementById('question').textContent = question.q;
+      document.getElementById('feedback').className = 'feedback';
       
       const optionsContainer = document.getElementById('options');
       optionsContainer.innerHTML = '';
@@ -595,54 +1108,90 @@
         const button = document.createElement('button');
         button.className = 'option fade-in';
         button.textContent = option;
-        button.style.animationDelay = `${index * 0.1}s`;
-        button.onclick = () => selectAnswer(index);
+        button.style.animationDelay = `${index * 0.15}s`;
+        button.onclick = () => selectAnswer(index, button);
         optionsContainer.appendChild(button);
       });
     }
 
-    function selectAnswer(selectedIndex) {
+    function selectAnswer(selectedIndex, button) {
       userAnswers.push(selectedIndex);
-      if (selectedIndex === questions[currentQuestion].answer) {
+      const isCorrect = selectedIndex === questions[currentQuestion].answer;
+      
+      // Desabilitar todas as opções
+      const options = document.querySelectorAll('.option');
+      options.forEach(opt => opt.style.pointerEvents = 'none');
+      
+      if (isCorrect) {
         score++;
+        document.getElementById('faithValue').textContent = score;
+        document.getElementById('faithCorrect').classList.add('correct-faith');
+        setTimeout(() => document.getElementById('faithCorrect').classList.remove('correct-faith'), 500);
+        
+        button.classList.add('correct');
+        createCelebrationParticles(true);
+        updateCandleEffects(true);
+        updateScreenGlow(true);
+        showFeedback(true);
+        showFaithMessage(true);
+      } else {
+        gratitudeScore++;
+        document.getElementById('gratitudeValue').textContent = gratitudeScore;
+        document.getElementById('gratitudeItem').classList.add('wrong-faith');
+        setTimeout(() => document.getElementById('gratitudeItem').classList.remove('wrong-faith'), 500);
+        
+        button.classList.add('wrong');
+        
+        // Mostrar resposta correta
+        options[questions[currentQuestion].answer].classList.add('correct');
+        
+        createCelebrationParticles(false);
+        updateCandleEffects(false);
+        updateScreenGlow(false);
+        showFeedback(false);
+        showFaithMessage(false);
       }
       
-      // Efeito visual na seleção
-      const options = document.querySelectorAll('.option');
-      options[selectedIndex].style.background = 'linear-gradient(45deg, #4caf50, #8bc34a)';
-      options[selectedIndex].style.transform = 'scale(1.1)';
+      // Vibração
+      if (navigator.vibrate) {
+        navigator.vibrate(isCorrect ? [100, 50, 100] : [200, 100, 200]);
+      }
       
       setTimeout(() => {
         currentQuestion++;
         loadQuestion();
-      }, 800);
+      }, 1500);
     }
 
     function showFinalButton() {
       document.getElementById('progressBar').style.width = '100%';
-      document.getElementById('progressText').textContent = 'Quiz Concluído!';
+      document.getElementById('progressText').textContent = '🔥 Consulta Sagrada Concluída! 🔥';
       
       document.getElementById('question').innerHTML = `
-        <div style="font-size: 1.8rem; color: #ffdd44; margin-bottom: 20px;">
-          ✨ Consulta Finalizada ✨
+        <div style="font-size: 2rem; color: #ffd700; margin-bottom: 20px; text-shadow: 0 0 20px #ffd700;">
+          ✨ Jornada Espiritual Completa ✨
         </div>
-        <div style="font-size: 1.2rem;">
-          Você acertou ${score} de ${questions.length} questões.<br>
-          O oráculo está pronto para revelar sua Pombagira guia!
+        <div style="font-size: 1.3rem; line-height: 1.6;">
+          <span style="color: #00ff88;">🙏 Fé conquistada: ${score}</span><br>
+          <span style="color: #ffd700;">💫 Gratidão acumulada: ${gratitudeScore}</span><br><br>
+          O oráculo está pronto para revelar<br>sua Pombagira guia com devoção!
         </div>
       `;
       document.getElementById('options').innerHTML = '';
+      document.getElementById('feedback').className = 'feedback';
       document.getElementById('revealBtn').style.display = 'inline-block';
+      
+      createFinalCelebration();
     }
 
     function revealPombagira() {
       let index;
       if (score <= 4) {
-        index = 2; // Pombagira das Almas
+        index = 2;
       } else if (score <= 8) {
-        index = 1; // Pombagira Cigana  
+        index = 1;
       } else {
-        index = 0; // Maria Padilha
+        index = 0;
       }
 
       const selectedPombagira = pombagiras[index];
@@ -650,29 +1199,49 @@
       document.getElementById('quizArea').style.display = 'none';
       document.getElementById('revealBtn').style.display = 'none';
       
+      // Atualizar mensagem de gratidão baseada no desempenho
+      const gratitudeMessages = [
+        `🙏 "Com ${score} acertos, sua fé é forte! Gratidão pela jornada!" 🙏`,
+        `✨ "Sua devoção foi reconhecida! ${score} bençãos recebidas!" ✨`,
+        `🌹 "Que sua gratidão pela sabedoria te guie sempre!" 🌹`
+      ];
+      document.getElementById('gratitudeMessage').textContent = gratitudeMessages[Math.floor(Math.random() * gratitudeMessages.length)];
+      
       const resultArea = document.getElementById('resultArea');
       document.getElementById('pombagiraName').textContent = selectedPombagira.name;
       document.getElementById('pombagiraImage').src = selectedPombagira.image;
       document.getElementById('pombagiraDescription').innerHTML = `
-        <h3 style="color: #ff6b35; margin-bottom: 15px;">🌹 Sua Pombagira Guia 🌹</h3>
-        <p style="margin-bottom: 15px;"><strong>Descrição:</strong> ${selectedPombagira.description}</p>
-        <p><strong>Características:</strong> ${selectedPombagira.traits}</p>
+        <h3 style="color: #ffd700; margin-bottom: 15px; text-shadow: 0 0 10px #ffd700;">🌹 Sua Pombagira Guia 🌹</h3>
+        <p style="margin-bottom: 15px;"><strong style="color: #ff6b35;">Descrição:</strong> ${selectedPombagira.description}</p>
+        <p style="margin-bottom: 15px;"><strong style="color: #ff6b35;">Características:</strong> ${selectedPombagira.traits}</p>
+        <p style="color: #ffd700; font-style: italic; margin-top: 20px; text-align: center;">
+          🙏 "Que sua fé e devoção sejam recompensadas. Laroyê!" 🙏
+        </p>
       `;
       
       resultArea.style.display = 'block';
-      createCelebrationParticles();
       
-      // Som de revelação (simulado com vibração se disponível)
+      // Celebração final
+      document.getElementById('celebration').classList.add('active');
+      setTimeout(() => {
+        document.getElementById('celebration').classList.remove('active');
+      }, 1000);
+      
+      createFinalCelebration();
+      
       if (navigator.vibrate) {
-        navigator.vibrate([200, 100, 200]);
+        navigator.vibrate([200, 100, 200, 100, 400]);
       }
     }
 
     function restartQuiz() {
       currentQuestion = 0;
       score = 0;
+      gratitudeScore = 0;
       userAnswers = [];
       
+      document.getElementById('faithValue').textContent = '0';
+      document.getElementById('gratitudeValue').textContent = '0';
       document.getElementById('quizArea').style.display = 'block';
       document.getElementById('resultArea').style.display = 'none';
       document.getElementById('revealBtn').style.display = 'none';
@@ -686,7 +1255,7 @@
       canvasHeight = canvas.height = window.innerHeight;
     });
 
-    // Iniciar quiz
+    // Iniciar quiz com animação
     setTimeout(() => {
       loadQuestion();
     }, 1000);
