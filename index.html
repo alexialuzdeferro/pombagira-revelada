@@ -123,6 +123,7 @@
       font-size: 12px;
       margin-left: 4px;
       text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+      transition: all 0.3s ease;
     }
     
     .counter-dot {
@@ -854,100 +855,207 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // ========== SUPABASE CONTADOR ==========
+    // ========== SUPABASE CONTADOR - VERSÃO CORRETA ==========
     const SUPABASE_URL = 'https://qgnprifuachmfxoaalax.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnbnByaWZ1YWNobWZ4b2FhbGF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUzODU5MDcsImV4cCI6MjA4MDk2MTkwN30.sKSYFhcI-zflr9RUKXpWF0_5sc6foDG7yxdEirtE0W4';
-    const SITE_NAME = 'site_alexialuzdeferro';
+    
+    // O nome da tabela EXISTENTE é este:
+    const TABLE_NAME = 'site_alexialuzdeferro';
+    // Nome do seu site (vamos usar como ID na tabela)
+    const SITE_ID = 'oraculo_pombagira';
 
     async function initCounter() {
-      try {
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        
-        // Verificar se já contamos nesta sessão
-        if (!sessionStorage.getItem('site_oraculo_visited')) {
-          // Incrementar contador único
-          await incrementUniqueCounter(supabase);
-          sessionStorage.setItem('site_oraculo_visited', 'true');
-          document.getElementById('counter-status').classList.add('online');
-        } else {
-          // Apenas mostrar o valor atual
-          await showCurrentCount(supabase);
-          document.getElementById('counter-status').classList.add('online');
+        try {
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            
+            // Verificar se já contamos nesta sessão
+            if (!sessionStorage.getItem('oraculo_visited')) {
+                // Incrementar contador na tabela EXISTENTE
+                await incrementCounter(supabase);
+                sessionStorage.setItem('oraculo_visited', 'true');
+                document.getElementById('counter-status').classList.add('online');
+            } else {
+                // Apenas mostrar o valor atual
+                await showCurrentCount(supabase);
+                document.getElementById('counter-status').classList.add('online');
+            }
+            
+        } catch (error) {
+            console.log('⚠️ Usando modo offline...');
+            useOfflineCounter();
         }
-        
-      } catch (error) {
-        // Modo offline silencioso
-        useOfflineCounter();
-      }
     }
     
-    async function incrementUniqueCounter(supabase) {
-      try {
-        // Método UPSERT (cria ou atualiza)
-        const { data: existing } = await supabase
-          .from('page_views')
-          .select('view_count')
-          .eq('page_name', SITE_NAME)
-          .single();
-        
-        const current = existing?.view_count || 0;
-        const newCount = current + 1;
-        
-        await supabase
-          .from('page_views')
-          .upsert({
-            page_name: SITE_NAME,
-            view_count: newCount,
-            last_updated: new Date().toISOString()
-          }, {
-            onConflict: 'page_name'
-          });
-        
-        // Animar o número
-        const countEl = document.getElementById('global-count');
-        countEl.textContent = newCount;
-        countEl.style.color = '#ff6b35';
-        countEl.style.textShadow = '0 0 8px #ff6b35';
-        
-        // Efeito de piscar
-        setTimeout(() => {
-          countEl.style.color = '#ffd700';
-          countEl.style.textShadow = '0 0 5px rgba(255, 215, 0, 0.5)';
-        }, 300);
-        
-        console.log('✅ Contador Oráculo atualizado:', newCount);
-        
-      } catch (error) {
-        console.error('Erro Supabase:', error);
-        throw error;
-      }
+    async function incrementCounter(supabase) {
+        try {
+            // PRIMEIRO: Verificar se já existe um registro para este site
+            const { data: existing, error: fetchError } = await supabase
+                .from(TABLE_NAME)
+                .select('*')
+                .eq('site_id', SITE_ID)
+                .single();
+            
+            if (fetchError) {
+                // Não existe registro ainda - CRIAR PRIMEIRO
+                console.log('🔄 Criando primeiro registro para o oráculo...');
+                
+                const { data: newData, error: createError } = await supabase
+                    .from(TABLE_NAME)
+                    .insert([{
+                        site_id: SITE_ID,
+                        site_name: 'Oráculo Sagrado das Pombagiras',
+                        view_count: 1,
+                        last_updated: new Date().toISOString(),
+                        created_at: new Date().toISOString()
+                    }]);
+                
+                if (createError) {
+                    console.error('❌ Erro ao criar:', createError);
+                    
+                    // Se der erro, pode ser que a tabela não tenha as colunas certas
+                    // Vamos tentar uma abordagem mais simples
+                    await trySimpleInsert(supabase);
+                    return;
+                }
+                
+                // Animar o número
+                const countEl = document.getElementById('global-count');
+                countEl.textContent = '1';
+                animateCounter(countEl);
+                console.log('✅ Primeiro visitante registrado!');
+                
+            } else {
+                // Já existe - ATUALIZAR incrementando
+                const currentCount = existing.view_count || 0;
+                const newCount = currentCount + 1;
+                
+                const { error: updateError } = await supabase
+                    .from(TABLE_NAME)
+                    .update({
+                        view_count: newCount,
+                        last_updated: new Date().toISOString()
+                    })
+                    .eq('site_id', SITE_ID);
+                
+                if (updateError) {
+                    console.error('❌ Erro ao atualizar:', updateError);
+                    
+                    // Tentar abordagem alternativa
+                    await tryAlternativeUpdate(supabase, currentCount, newCount);
+                    return;
+                }
+                
+                // Animar o número
+                const countEl = document.getElementById('global-count');
+                countEl.textContent = newCount;
+                animateCounter(countEl);
+                console.log('✅ Contador atualizado para:', newCount);
+            }
+            
+        } catch (error) {
+            console.error('Erro Supabase:', error);
+            throw error;
+        }
+    }
+    
+    // Método alternativo caso a estrutura da tabela seja diferente
+    async function trySimpleInsert(supabase) {
+        try {
+            // Tentar inserir de forma mais simples
+            const { error } = await supabase
+                .from(TABLE_NAME)
+                .insert([{
+                    site_name: 'Oráculo Sagrado das Pombagiras',
+                    view_count: 1
+                }]);
+            
+            if (error) {
+                console.log('📱 Usando localStorage...');
+                useOfflineCounter();
+            } else {
+                document.getElementById('global-count').textContent = '1';
+                animateCounter(document.getElementById('global-count'));
+            }
+        } catch (e) {
+            useOfflineCounter();
+        }
+    }
+    
+    async function tryAlternativeUpdate(supabase, currentCount, newCount) {
+        try {
+            // Tentar atualizar de forma diferente
+            const { error } = await supabase
+                .from(TABLE_NAME)
+                .update({ view_count: newCount })
+                .eq('site_name', 'Oráculo Sagrado das Pombagiras');
+            
+            if (!error) {
+                document.getElementById('global-count').textContent = newCount;
+                animateCounter(document.getElementById('global-count'));
+            } else {
+                useOfflineCounter();
+            }
+        } catch (e) {
+            useOfflineCounter();
+        }
     }
     
     async function showCurrentCount(supabase) {
-      try {
-        const { data } = await supabase
-          .from('page_views')
-          .select('view_count')
-          .eq('page_name', SITE_NAME)
-          .single();
-        
-        if (data) {
-          document.getElementById('global-count').textContent = data.view_count;
+        try {
+            // Tentar buscar pelo site_id primeiro
+            let { data, error } = await supabase
+                .from(TABLE_NAME)
+                .select('view_count')
+                .eq('site_id', SITE_ID)
+                .single();
+            
+            if (error) {
+                // Tentar buscar pelo site_name
+                ({ data, error } = await supabase
+                    .from(TABLE_NAME)
+                    .select('view_count')
+                    .eq('site_name', 'Oráculo Sagrado das Pombagiras')
+                    .single());
+            }
+            
+            if (data && data.view_count !== undefined) {
+                document.getElementById('global-count').textContent = data.view_count;
+            } else {
+                // Se não encontrar, mostrar 0
+                document.getElementById('global-count').textContent = '0';
+            }
+        } catch (error) {
+            console.error('Erro ao buscar:', error);
+            document.getElementById('global-count').textContent = '?';
         }
-      } catch (error) {
-        console.error('Erro ao buscar:', error);
-      }
+    }
+    
+    function animateCounter(element) {
+        element.style.transform = 'scale(1.3)';
+        element.style.color = '#ff6b35';
+        element.style.textShadow = '0 0 10px #ff6b35';
+        
+        setTimeout(() => {
+            element.style.transform = 'scale(1)';
+            element.style.color = '#ffd700';
+            element.style.textShadow = '0 0 5px rgba(255, 215, 0, 0.5)';
+        }, 300);
     }
     
     function useOfflineCounter() {
-      let local = localStorage.getItem('local_oraculo_views') || 0;
-      local = parseInt(local) + 1;
-      localStorage.setItem('local_oraculo_views', local);
-      
-      document.getElementById('global-count').textContent = local;
-      document.getElementById('global-count').style.opacity = '0.7';
-      document.getElementById('counter-status').style.background = 'rgba(251, 191, 36, 0.5)';
-      document.getElementById('counter-status').classList.add('online');
+        let local = localStorage.getItem('local_oraculo_views') || 0;
+        local = parseInt(local) + 1;
+        localStorage.setItem('local_oraculo_views', local);
+        
+        const countEl = document.getElementById('global-count');
+        countEl.textContent = local;
+        countEl.style.opacity = '0.8';
+        
+        const statusDot = document.getElementById('counter-status');
+        statusDot.style.background = 'rgba(251, 191, 36, 0.7)';
+        statusDot.classList.add('online');
+        
+        console.log('📱 Modo offline: contador local:', local);
     }
 
     // ========== SISTEMA DE PARTÍCULAS ==========
@@ -1427,8 +1535,8 @@
       canvasHeight = canvas.height = window.innerHeight;
     });
 
-    // Iniciar tudo
-    document.addEventListener('DOMContentLoaded', () => {
+    // Iniciar tudo quando a página carregar
+    document.addEventListener('DOMContentLoaded', function() {
       // Iniciar contador do Supabase
       initCounter();
       
@@ -1440,6 +1548,26 @@
         loadQuestion();
       }, 1000);
     });
+
+    // ========== FUNÇÃO DE DEBUG (opcional - remova se não quiser) ==========
+    window.debugCounter = async function() {
+      console.log('🔍 DEBUG DO CONTADOR');
+      console.log('SessionStorage:', sessionStorage.getItem('oraculo_visited'));
+      console.log('LocalStorage:', localStorage.getItem('local_oraculo_views'));
+      
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      const { data, error } = await supabase
+        .from(TABLE_NAME)
+        .select('*');
+      
+      console.log('Supabase data:', data);
+      console.log('Supabase error:', error);
+      
+      if (confirm('Resetar sessão? (Isso fará contar novamente)')) {
+        sessionStorage.removeItem('oraculo_visited');
+        location.reload();
+      }
+    };
   </script>
 </body>
 </html>
