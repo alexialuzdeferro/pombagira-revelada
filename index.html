@@ -26,16 +26,10 @@
     body.correct-answer { background: radial-gradient(ellipse at center, #0d2d1a 0%, #061a0d 50%, #000000 100%); }
     body.wrong-answer { background: radial-gradient(ellipse at center, #3d0000 0%, #2a0000 50%, #000000 100%); }
     
-    #particles {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      pointer-events: none; z-index: 0;
-    }
+    #particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
     .screen-glow {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      pointer-events: none; z-index: 5;
-      box-shadow: inset 0 0 100px rgba(255, 23, 68, 0.3);
-      transition: box-shadow 0.5s ease;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 5;
+      box-shadow: inset 0 0 100px rgba(255, 23, 68, 0.3); transition: box-shadow 0.5s ease;
     }
     .screen-glow.correct { box-shadow: inset 0 0 150px rgba(0, 255, 136, 0.5); animation: correctPulse 0.5s ease; }
     .screen-glow.wrong { box-shadow: inset 0 0 150px rgba(255, 0, 68, 0.6); animation: wrongShake 0.5s ease; }
@@ -43,21 +37,13 @@
     @keyframes correctPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     @keyframes wrongShake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
 
-    .container {
-      position: relative; z-index: 10; max-width: 800px;
-      margin: 0 auto; padding: 20px; text-align: center;
-    }
-    .devotion-message {
-      font-size: 0.9rem; color: var(--gold); opacity: 0.8;
-      margin-bottom: 10px; font-style: italic; animation: devotionFloat 4s ease-in-out infinite;
-    }
+    .container { position: relative; z-index: 10; max-width: 800px; margin: 0 auto; padding: 20px; text-align: center; }
+    .devotion-message { font-size: 0.9rem; color: var(--gold); opacity: 0.8; margin-bottom: 10px; font-style: italic; animation: devotionFloat 4s ease-in-out infinite; }
     @keyframes devotionFloat { 0%, 100% { transform: translateY(0); opacity: 0.8; } 50% { transform: translateY(-5px); opacity: 1; } }
 
     h1 {
-      font-family: 'Dancing Script', cursive; color: #ff6b35;
-      font-size: clamp(1.8rem, 5vw, 3.2rem);
-      text-shadow: 0 0 20px #ff6b35, 0 0 40px #ff1744;
-      margin: 20px 0; animation: titleGlow 2s ease-in-out infinite alternate;
+      font-family: 'Dancing Script', cursive; color: #ff6b35; font-size: clamp(1.8rem, 5vw, 3.2rem);
+      text-shadow: 0 0 20px #ff6b35, 0 0 40px #ff1744; margin: 20px 0; animation: titleGlow 2s ease-in-out infinite alternate;
     }
     @keyframes titleGlow { 0% { transform: scale(1); } 100% { transform: scale(1.02); text-shadow: 0 0 30px #ff6b35, 0 0 60px #ff1744, 0 0 90px #ffd700; } }
 
@@ -65,73 +51,43 @@
     .vela {
       width: 18px; height: 60px; margin: 0 10px;
       background: linear-gradient(to bottom, #8b0000 0%, #ff2222 50%, #8b0000 100%);
-      border-radius: 10px 10px 4px 4px; position: relative;
-      animation: candlePulse 1.5s infinite ease-in-out;
+      border-radius: 10px 10px 4px 4px; position: relative; animation: candlePulse 1.5s infinite ease-in-out;
       box-shadow: 0 0 15px rgba(255, 68, 68, 0.6);
     }
     .vela::after {
-      content: ''; position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
-      width: 12px; height: 20px;
+      content: ''; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 12px; height: 20px;
       background: radial-gradient(ellipse at bottom, #fff 0%, #ff9800 40%, transparent 100%);
-      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-      animation: flameDance 0.3s infinite ease-in-out alternate;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; animation: flameDance 0.3s infinite ease-in-out alternate;
     }
     @keyframes candlePulse { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.05); } }
     @keyframes flameDance { 0% { transform: translateX(-50%) rotate(-5deg) scale(0.9); } 100% { transform: translateX(-50%) rotate(5deg) scale(1.1); } }
 
     .faith-counter { display: flex; justify-content: center; gap: 20px; margin: 20px 0; }
-    .faith-item {
-      padding: 10px 20px; background: rgba(0, 0, 0, 0.6);
-      border-radius: 20px; border: 2px solid var(--gold); transition: all 0.3s ease;
-    }
+    .faith-item { padding: 10px 20px; background: rgba(0, 0, 0, 0.6); border-radius: 20px; border: 2px solid var(--gold); }
     .faith-value { font-weight: bold; color: var(--gold); font-size: 1.2rem; margin-left: 5px; }
 
     .progress-container { margin: 20px 0; background: rgba(0,0,0,0.6); border-radius: 15px; padding: 5px; border: 1px solid var(--secondary-glow); }
     .progress-bar { height: 10px; background: linear-gradient(90deg, #ff1744, #ffd700); border-radius: 10px; transition: width 0.5s ease; }
     .progress-text { margin-top: 8px; font-size: 0.9rem; color: var(--gold); }
 
-    .quiz-area {
-      background: rgba(20, 0, 0, 0.85); border: 2px solid var(--gold);
-      border-radius: 20px; padding: 25px; margin: 20px 0; backdrop-filter: blur(10px);
-    }
+    .quiz-area { background: rgba(20, 0, 0, 0.85); border: 2px solid var(--gold); border-radius: 20px; padding: 25px; margin: 20px 0; backdrop-filter: blur(10px); }
     .question { font-size: 1.3rem; margin-bottom: 20px; color: var(--gold); text-shadow: 1px 1px 2px #000; }
     .options { display: flex; flex-direction: column; gap: 12px; }
-    .option {
-      padding: 15px; background: linear-gradient(45deg, #4d0000, #8b0000);
-      border: 2px solid var(--secondary-glow); border-radius: 15px;
-      color: white; font-family: 'Cinzel', serif; cursor: pointer; transition: all 0.2s;
-    }
+    .option { padding: 15px; background: linear-gradient(45deg, #4d0000, #8b0000); border: 2px solid var(--secondary-glow); border-radius: 15px; color: white; font-family: 'Cinzel', serif; cursor: pointer; transition: all 0.2s; }
     .option:hover { transform: scale(1.02); background: linear-gradient(45deg, #8b0000, #ff1744); border-color: var(--gold); }
     .option.correct { background: #006400 !important; border-color: var(--correct-color); }
     .option.wrong { background: #8b0000 !important; border-color: var(--wrong-color); opacity: 0.7; }
 
-    .reveal-btn {
-      padding: 20px 40px; font-size: 1.3rem; background: linear-gradient(45deg, #ff1744, #ffd700);
-      border: none; border-radius: 40px; cursor: pointer; font-family: 'Cinzel', serif;
-      font-weight: bold; display: none; margin: 20px auto; animation: pulse 2s infinite;
-    }
+    .reveal-btn { padding: 20px 40px; font-size: 1.3rem; background: linear-gradient(45deg, #ff1744, #ffd700); border: none; border-radius: 40px; cursor: pointer; font-family: 'Cinzel', serif; font-weight: bold; display: none; margin: 20px auto; animation: pulse 2s infinite; }
     @keyframes pulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px var(--primary-glow); } 50% { transform: scale(1.05); box-shadow: 0 0 40px var(--gold); } }
 
     .result-area { display: none; margin-top: 30px; animation: fadeIn 1s ease; }
     .pombagira-name { font-family: 'Dancing Script', cursive; font-size: 2.8rem; color: var(--gold); margin: 15px 0; }
-    .pombagira-image {
-      width: 250px; height: 250px; border-radius: 50%; border: 5px solid var(--gold);
-      margin: 20px 0; object-fit: cover; box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
-    }
-    .pombagira-description {
-      background: rgba(0,0,0,0.7); padding: 20px; border-radius: 15px;
-      line-height: 1.6; text-align: left; border-left: 5px solid var(--gold);
-    }
-    .restart-btn { margin-top: 25px; padding: 12px 30px; cursor: pointer; background: #444; color: #fff; border: 1px solid #999; border-radius: 20px; }
+    .pombagira-image { width: 280px; height: 280px; border-radius: 50%; border: 5px solid var(--gold); margin: 20px 0; object-fit: cover; box-shadow: 0 0 60px rgba(255, 215, 0, 0.6); }
+    .pombagira-description { background: rgba(0,0,0,0.8); padding: 25px; border-radius: 15px; line-height: 1.6; text-align: left; border-left: 6px solid var(--gold); }
+    .restart-btn { margin-top: 25px; padding: 12px 30px; cursor: pointer; background: #333; color: #fff; border: 1px solid var(--gold); border-radius: 20px; }
 
-    .feedback { font-size: 1.2rem; margin: 15px 0; font-weight: bold; height: 25px; }
-    .correct-text { color: var(--correct-color); }
-    .wrong-text { color: var(--wrong-color); }
-
-    @media (max-width: 600px) {
-      .pombagira-image { width: 180px; height: 180px; }
-      h1 { font-size: 1.8rem; }
-    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
@@ -139,8 +95,7 @@
   <div class="screen-glow" id="screenGlow"></div>
   
   <div class="container">
-    <div class="devotion-message">✨ "Laroyê! Que o axé guie sua consulta" ✨</div>
-    
+    <div class="devotion-message">✨ "Abram-se os caminhos para a verdade" ✨</div>
     <div class="altar">
       <div class="vela"></div><div class="vela"></div><div class="vela"></div>
       <div class="vela"></div><div class="vela"></div><div class="vela"></div>
@@ -155,12 +110,11 @@
 
     <div class="progress-container">
       <div class="progress-bar" id="progressBar" style="width: 0%"></div>
-      <div class="progress-text" id="progressText">🕯️ Iniciando jornada...</div>
+      <div class="progress-text" id="progressText">Iniciando consulta sagrada...</div>
     </div>
 
     <div class="quiz-area" id="quizArea">
-      <div class="question" id="question">O oráculo está se abrindo...</div>
-      <div class="feedback" id="feedback"></div>
+      <div class="question" id="question">Preparando as energias...</div>
       <div class="options" id="options"></div>
     </div>
 
@@ -170,40 +124,87 @@
       <div class="pombagira-name" id="pombagiraName"></div>
       <img class="pombagira-image" id="pombagiraImage" src="" alt="Pombagira">
       <div class="pombagira-description" id="pombagiraDescription"></div>
-      <button class="restart-btn" onclick="location.reload()">🔄 Nova Consulta</button>
+      <button class="restart-btn" onclick="location.reload()">🔄 Consultar Novamente</button>
     </div>
   </div>
 
   <script>
-    // Configurações do Quiz
     const questions = [
-      { q: "Qual dessas qualidades você mais busca em sua vida agora?", options: ["Poder e Liderança", "Cura e Simplicidade", "Coragem para Lutar"], answer: 0 },
-      { q: "Onde você sente que sua energia é mais forte?", options: ["Nas encruzilhadas da cidade", "No silêncio dos campos", "No calor das batalhas"], answer: 0 },
-      { q: "Como você lida com injustiças?", options: ["Com sabedoria e estratégia", "Com perdão e transformação", "Com força e proteção direta"], answer: 2 },
-      { q: "O que o mistério da noite representa para você?", options: ["Segredos revelados", "Ciclos que se encerram", "Intuição e ocultismo"], answer: 2 },
-      { q: "Qual desses elementos mais te atrai?", options: ["Rosas e perfumes", "Ervas e banhos", "Espadas e metais"], answer: 0 },
-      { q: "Sua alegria se manifesta melhor através de:", options: ["Dança e celebração", "Liberdade e viagens", "Malandragem e astúcia"], answer: 0 },
-      { q: "Qual ambiente te traz mais paz espiritual?", options: ["O mar e a areia", "A sombra de uma árvore", "A luz da lua cheia"], answer: 0 },
-      { q: "Como você enxerga o destino?", options: ["Como algo que eu comando", "Como algo que flui como as águas", "Como algo escrito nas cartas"], answer: 2 },
-      { q: "Em momentos de caos mental, você busca:", options: ["Transformar dor em força", "O silêncio das almas", "Um novo recomeço"], answer: 0 },
-      { q: "Sua proteção ideal seria:", options: ["Uma rainha poderosa", "Uma guerreira destemida", "Uma cigana sábia"], answer: 1 },
-      { q: "O que é fundamental em um ritual?", options: ["Respeito e seriedade", "Alegria e cores", "Ancestralidade e raízes"], answer: 2 },
-      { q: "Qual presente você daria ao sagrado?", options: ["Joias e champanhe", "Moedas e baralho", "Bonecas e doces"], answer: 0 }
+      { q: "Qual desses sentimentos guia suas ações hoje?", options: ["Sede de Justiça e Ordem", "Desejo de Cura e Paz", "Vontade de Lutar e Vencer"], answer: 0 },
+      { q: "Onde você busca refúgio nos momentos difíceis?", options: ["No movimento das ruas", "Na calmaria da natureza", "No mistério do silêncio"], answer: 2 },
+      { q: "Como você prefere resolver um conflito?", options: ["Com diplomacia e autoridade", "Com renovação e humildade", "Com força e proteção direta"], answer: 0 },
+      { q: "Qual o seu maior desejo espiritual?", options: ["Poder e Reconhecimento", "Liberdade e Novos Rumos", "Proteção e Blindagem"], answer: 1 },
+      { q: "O que te traz mais alegria de viver?", options: ["A música e a dança", "A sorte e a prosperidade", "O carinho e a pureza"], answer: 0 },
+      { q: "Sua alma se sente mais conectada a:", options: ["Caminhos de terra", "Águas salgadas", "Encruzilhadas de ferro"], answer: 2 },
+      { q: "Qual desses mistérios mais te fascina?", options: ["O ciclo da vida e morte", "A magia do ocultismo", "A força da ancestralidade"], answer: 0 },
+      { q: "Em uma situação de caos, você:", options: ["Mantém a sanidade", "Usa a malícia para escapar", "Confia na intuição cigana"], answer: 1 },
+      { q: "O que você oferece ao universo?", options: ["Lealdade e Gratidão", "Beleza e Sedução", "Trabalho e Devoção"], answer: 0 },
+      { q: "Qual elemento natural mais te energiza?", options: ["O fogo das velas", "As folhas das árvores", "O vento da noite"], answer: 1 },
+      { q: "Sua personalidade é melhor descrita como:", options: ["Imponente e Justa", "Doce e Renovadora", "Astuta e Protetora"], answer: 0 },
+      { q: "O que você busca em sua guardiã?", options: ["Uma Rainha que comanda", "Uma Guerreira que luta", "Uma Mãe que acolhe"], answer: 1 }
     ];
 
     const pombagiras = [
-      { name: "Maria Padilha", domain: "Realeza/Comando", desc: "A Rainha das Pombagiras. Governa com sabedoria e força. Ensina a liderar com justiça e enfrentar desafios com coragem.", img: "https://images.unsplash.com/photo-1533105079780-92b9be482077?w=400" },
-      { name: "Maria Mulambo", domain: "Cura/Humildade", desc: "A mãe que acolhe e cura. Ensina que a humildade é o caminho para a verdadeira transformação.", img: "https://images.unsplash.com/photo-1515238152791-8216bfdf89a7?w=400" },
-      { name: "Maria Quitéria", domain: "Guerra/Proteção", desc: "A guerreira que defende os seus com bravura. Empunha a espada da justiça e ensina a lutar pelos direitos.", img: "https://images.unsplash.com/photo-1590483736622-39da8caf3501?w=400" },
-      { name: "Rosa Caveira", domain: "Justiça/Ciclos", desc: "Guardiã do equilíbrio. Lembra que a morte é uma passagem e que a justiça divina sempre prevalece.", img: "https://images.unsplash.com/photo-1509248961158-e54f6934749c?w=400" },
-      { name: "Dama da Noite", domain: "Mistério/Oculto", desc: "Guardiã dos segredos. Ilumina o caminho com a luz da lua e ensina a confiar na intuição.", img: "https://images.unsplash.com/photo-1534732862647-51e4c7497f17?w=400" },
-      { name: "Sete Saias", domain: "Alegria/Intensidade", desc: "Traz cor e alegria. Ensina a celebrar cada momento e viver a vida com máxima intensidade.", img: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400" },
-      { name: "Pombagira Cigana", domain: "Liberdade/Prosperidade", desc: "A viajante que abre caminhos. Ensina a confiar no destino e a viver com liberdade e sorte.", img: "https://images.unsplash.com/photo-1515238152791-8216bfdf89a7?w=400" },
-      { name: "Maria Navalha", domain: "Malandragem/Rua", desc: "Protetora das ruas. Com sua astúcia, ensina a enfrentar os desafios da vida com coragem e malícia.", img: "https://images.unsplash.com/photo-1533038590840-1cde6e668a91?w=400" },
-      { name: "Pombagira da Praia", domain: "Emoção/Limpeza", desc: "Guardiã das águas. Limpa a alma com suas ondas e ensina a fluir com a vida em paz.", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400" },
-      { name: "Maria Farrapo", domain: "Sanidade/Transformação", desc: "Transformadora da mente. Ensina que mesmo no caos podemos encontrar clareza e força.", img: "https://images.unsplash.com/photo-1445445290350-18a3b86e0b5b?w=400" },
-      { name: "Pombagira Menina", domain: "Renovação/Inocência", desc: "Guardiã da esperança. Com seu sorriso, ensina que sempre é possível recomeçar com pureza.", img: "https://images.unsplash.com/photo-1496293455970-f8581aae0e3c?w=400" },
-      { name: "Pombagira da Figueira", domain: "Raiz/Ancestralidade", desc: "Guardiã das raízes. Conecta aos antepassados e à sabedoria da terra para encontrar pertencimento.", img: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=400" }
+      { 
+        name: "Maria Padilha", 
+        desc: "A Rainha das Pombagiras. Governa com sabedoria, força e autoridade absoluta. Ensina que o verdadeiro poder vem do respeito e da inteligência.", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/maria_padilha_the_vengeful_pombagira_stands_in.jpeg"
+      },
+      { 
+        name: "Maria Mulambo", 
+        desc: "A senhora da cura e da humildade. Ela transforma o lixo em luxo espiritual, curando as feridas mais profundas da alma com seu manto de amor.", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/maria_mulambo_the_most_feared_pombagira_sits%20(3).jpeg"
+      },
+      { 
+        name: "Maria Quitéria", 
+        desc: "A guerreira implacável. Defende seus protegidos com bravura e nunca foge de uma batalha. Sua espada é a justiça divina na terra.", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/a_pombagira_in_a_flowing_red_dress%20(1).jpeg"
+      },
+      { 
+        name: "Rosa Caveira", 
+        desc: "Guardiã da justiça e do ciclo da vida. Ela nos lembra que tudo tem um fim e um recomeço, atuando com seriedade no equilíbrio das almas.", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/a_pombagira_in_a_tattered_black_gown%20(8).jpeg"
+      },
+      { 
+        name: "Dama da Noite", 
+        desc: "A senhora dos mistérios e da intuição. Atua sob o luar revelando verdades ocultas e protegendo aqueles que caminham na escuridão.", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/a_pombagira_in_a_tattered_purple_gown%20(2).jpeg"
+      },
+      { 
+        name: "Sete Saias", 
+        desc: "A pombagira da alegria e da intensidade. Com suas cores e dança, ela quebra as amarras da tristeza e traz movimento para a vida.", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/a_pombagira_in_a_tattered_red_gown%20(2).jpeg"
+      },
+      { 
+        name: "Pombagira Cigana", 
+        desc: "Dona da liberdade e da prosperidade. Abre caminhos com suas cartas e moedas, ensinando que a sorte favorece quem tem fé no destino.", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/transferir%20(29).jpg"
+      },
+      { 
+        name: "Maria Navalha", 
+        desc: "A mestre da malandragem e da proteção nas ruas. Astuta e corajosa, ela garante a sobrevivência e a vitória sobre os inimigos traiçoeiros.", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/transferir%20(24).jpg"
+      },
+      { 
+        name: "Pombagira da Praia", 
+        desc: "A força das águas que limpam a alma. Ela traz a calma do mar e o poder de purificação emocional para quem busca paz interior.", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/transferir%20(16).jpg"
+      },
+      { 
+        name: "Maria Farrapo", 
+        desc: "Transformadora do caos em sanidade. Ela ajuda a reconstruir mentes fragmentadas e a encontrar clareza nos momentos de maior desespero.", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/transferir%20(11).jpg"
+      },
+      { 
+        name: "Pombagira Menina", 
+        desc: "A pureza do recomeço. Com sua energia doce e renovadora, ela cura traumas do passado e protege a inocência da nossa criança interior.", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/Image_fx%20(14).png"
+      },
+      { 
+        name: "Pombagira da Figueira", 
+        desc: "A guardiã da ancestralidade e das raízes. Conecta você com seus antepassados e com a sabedoria milenar da terra.", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/OIG4.vM77AVN.jpg"
+      }
     ];
 
     let currentQ = 0;
@@ -215,10 +216,10 @@
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       let parts = [];
-      for(let i=0; i<100; i++) parts.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2+1, s: Math.random()*1+0.5});
+      for(let i=0; i<80; i++) parts.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2+1, s: Math.random()*0.8+0.2});
       function draw() {
         ctx.clearRect(0,0,canvas.width, canvas.height);
-        ctx.fillStyle = "rgba(255, 107, 53, 0.3)";
+        ctx.fillStyle = "rgba(255, 107, 53, 0.4)";
         parts.forEach(p => {
           ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
           p.y -= p.s; if(p.y < -10) p.y = canvas.height + 10;
@@ -235,8 +236,8 @@
       }
       const q = questions[currentQ];
       document.getElementById('question').innerText = q.q;
-      document.getElementById('progressText').innerText = `Questão ${currentQ + 1} de 12`;
-      document.getElementById('progressBar').style.width = `${(currentQ / 12) * 100}%`;
+      document.getElementById('progressText').innerText = `Pergunta ${currentQ + 1} de 12`;
+      document.getElementById('progressBar').style.width = `${((currentQ) / 12) * 100}%`;
       
       const opts = document.getElementById('options');
       opts.innerHTML = '';
@@ -244,26 +245,21 @@
         const btn = document.createElement('button');
         btn.className = 'option';
         btn.innerText = o;
-        btn.onclick = () => check(i, btn);
+        btn.onclick = () => select(i, btn);
         opts.appendChild(btn);
       });
-      document.getElementById('feedback').innerText = '';
     }
 
-    function check(idx, btn) {
-      const correct = questions[currentQ].answer;
+    function select(idx, btn) {
       const all = document.querySelectorAll('.option');
       all.forEach(b => b.style.pointerEvents = 'none');
-
-      if(idx === correct) {
+      
+      if(idx === questions[currentQ].answer) {
         score++;
         btn.classList.add('correct');
-        document.getElementById('feedback').innerHTML = '<span class="correct-text">✨ Axé! Sua fé é forte!</span>';
         document.getElementById('screenGlow').classList.add('correct');
       } else {
         btn.classList.add('wrong');
-        all[correct].classList.add('correct');
-        document.getElementById('feedback').innerHTML = '<span class="wrong-text">🕯️ O oráculo pede reflexão...</span>';
         document.getElementById('screenGlow').classList.add('wrong');
       }
       
@@ -274,33 +270,32 @@
         document.getElementById('screenGlow').classList.remove('correct', 'wrong');
         currentQ++;
         loadQuestion();
-      }, 1500);
+      }, 1200);
     }
 
     function showFinal() {
       document.getElementById('quizArea').style.display = 'none';
       document.getElementById('progressBar').style.width = '100%';
-      document.getElementById('progressText').innerText = 'Jornada Concluída!';
+      document.getElementById('progressText').innerText = 'Consulta Concluída!';
       document.getElementById('revealBtn').style.display = 'block';
     }
 
     function revealPombagira() {
-      // Lógica de sorteio baseada no score para distribuir entre as 12
-      // Como o score vai de 0 a 12, usamos ele como índice
-      let index = score;
-      if (index >= 12) index = 0; // Maria Padilha para gabarito
+      // Distribui as 12 Pombagiras baseado na performance do score (0 a 11)
+      let idx = score % 12;
+      const p = pombagiras[idx];
       
-      const p = pombagiras[index];
       document.getElementById('revealBtn').style.display = 'none';
       document.getElementById('resultArea').style.display = 'block';
       document.getElementById('pombagiraName').innerText = `🌹 ${p.name} 🌹`;
       document.getElementById('pombagiraImage').src = p.img;
       document.getElementById('pombagiraDescription').innerHTML = `
-        <p><strong>Domínio:</strong> ${p.domain}</p><br>
-        <p>${p.desc}</p><br>
-        <p style="text-align:center; color:var(--gold)"><em>"Laroyê, minha guardiã!"</em></p>
+        <p style="font-size: 1.2rem; margin-bottom: 15px;">${p.desc}</p>
+        <p style="text-align: center; color: var(--gold); font-weight: bold; font-style: italic; margin-top: 20px;">
+          Laroyê! Que sua guardiã ilumine seus caminhos com força e axé!
+        </p>
       `;
-      window.scrollTo(0, document.body.scrollHeight);
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
     window.onload = () => {
