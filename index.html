@@ -72,6 +72,13 @@
 
     .quiz-area { background: rgba(20, 0, 0, 0.85); border: 2px solid var(--gold); border-radius: 20px; padding: 25px; margin: 20px 0; backdrop-filter: blur(10px); }
     .question { font-size: 1.3rem; margin-bottom: 20px; color: var(--gold); text-shadow: 1px 1px 2px #000; }
+    .current-pombagira { 
+      color: #ff6b35; 
+      font-size: 1.5rem; 
+      margin-bottom: 10px; 
+      font-family: 'Dancing Script', cursive;
+      text-shadow: 0 0 10px rgba(255, 107, 53, 0.7);
+    }
     .options { display: flex; flex-direction: column; gap: 12px; }
     .option { padding: 15px; background: linear-gradient(45deg, #4d0000, #8b0000); border: 2px solid var(--secondary-glow); border-radius: 15px; color: white; font-family: 'Cinzel', serif; cursor: pointer; transition: all 0.2s; }
     .option:hover { transform: scale(1.02); background: linear-gradient(45deg, #8b0000, #ff1744); border-color: var(--gold); }
@@ -114,6 +121,7 @@
     </div>
 
     <div class="quiz-area" id="quizArea">
+      <div class="current-pombagira" id="currentPombagira"></div>
       <div class="question" id="question">Preparando as energias...</div>
       <div class="options" id="options"></div>
     </div>
@@ -129,81 +137,154 @@
   </div>
 
   <script>
+    // Perguntas específicas para cada Pombagira
     const questions = [
-      { q: "Qual desses sentimentos guia suas ações hoje?", options: ["Sede de Justiça e Ordem", "Desejo de Cura e Paz", "Vontade de Lutar e Vencer"], answer: 0 },
-      { q: "Onde você busca refúgio nos momentos difíceis?", options: ["No movimento das ruas", "Na calmaria da natureza", "No mistério do silêncio"], answer: 2 },
-      { q: "Como você prefere resolver um conflito?", options: ["Com diplomacia e autoridade", "Com renovação e humildade", "Com força e proteção direta"], answer: 0 },
-      { q: "Qual o seu maior desejo espiritual?", options: ["Poder e Reconhecimento", "Liberdade e Novos Rumos", "Proteção e Blindagem"], answer: 1 },
-      { q: "O que te traz mais alegria de viver?", options: ["A música e a dança", "A sorte e a prosperidade", "O carinho e a pureza"], answer: 0 },
-      { q: "Sua alma se sente mais conectada a:", options: ["Caminhos de terra", "Águas salgadas", "Encruzilhadas de ferro"], answer: 2 },
-      { q: "Qual desses mistérios mais te fascina?", options: ["O ciclo da vida e morte", "A magia do ocultismo", "A força da ancestralidade"], answer: 0 },
-      { q: "Em uma situação de caos, você:", options: ["Mantém a sanidade", "Usa a malícia para escapar", "Confia na intuição cigana"], answer: 1 },
-      { q: "O que você oferece ao universo?", options: ["Lealdade e Gratidão", "Beleza e Sedução", "Trabalho e Devoção"], answer: 0 },
-      { q: "Qual elemento natural mais te energiza?", options: ["O fogo das velas", "As folhas das árvores", "O vento da noite"], answer: 1 },
-      { q: "Sua personalidade é melhor descrita como:", options: ["Imponente e Justa", "Doce e Renovadora", "Astuta e Protetora"], answer: 0 },
-      { q: "O que você busca em sua guardiã?", options: ["Uma Rainha que comanda", "Uma Guerreira que luta", "Uma Mãe que acolhe"], answer: 1 }
+      { 
+        pombagira: "Pombagira Maria Padilha",
+        q: "Como você expressaria autoridade e comando em uma situação difícil?",
+        options: ["Comando com sabedoria e respeito", "Uso de diplomacia e estratégia", "Reação rápida e decisiva"],
+        answer: 0 
+      },
+      { 
+        pombagira: "Pombagira Maria Mulambo",
+        q: "Qual abordagem você usaria para curar uma ferida emocional profunda?",
+        options: ["Transformação com humildade", "Cura com amor incondicional", "Renovação com paciência"],
+        answer: 0 
+      },
+      { 
+        pombagira: "Pombagira Maria Quitéria",
+        q: "Como você defenderia alguém que ama de uma injustiça?",
+        options: ["Com bravura e coragem implacável", "Com estratégia e inteligência", "Com paciência e sabedoria"],
+        answer: 0 
+      },
+      { 
+        pombagira: "Pombagira Rosa Caveira",
+        q: "Qual é sua visão sobre o ciclo da vida e da morte?",
+        options: ["Justiça natural no equilíbrio cósmico", "Transformação e renascimento", "Mistério que deve ser respeitado"],
+        answer: 0 
+      },
+      { 
+        pombagira: "Pombagira Dama da Noite",
+        q: "Como você lida com segredos e mistérios ocultos?",
+        options: ["Revelando verdades com intuição", "Respeitando o mistério", "Usando conhecimento oculto"],
+        answer: 0 
+      },
+      { 
+        pombagira: "Pombagira Sete Saias",
+        q: "Como você expressaria alegria e intensidade na vida?",
+        options: ["Dança e celebração da vida", "Cores vibrantes e movimento", "Alegria compartilhada"],
+        answer: 0 
+      },
+      { 
+        pombagira: "Pombagira Cigana",
+        q: "O que a liberdade significa para você?",
+        options: ["Prosperidade e destino favorável", "Caminhos abertos sem amarras", "Sorte e oportunidades"],
+        answer: 0 
+      },
+      { 
+        pombagira: "Pombagira Maria Navalha",
+        q: "Como você enfrentaria um inimigo traiçoeiro?",
+        options: ["Com astúcia e malandragem", "Com coragem nas ruas", "Com proteção inteligente"],
+        answer: 0 
+      },
+      { 
+        pombagira: "Pombagira da Praia",
+        q: "Como você purificaria suas emoções?",
+        options: ["Com a calmaria das águas", "Com paz interior", "Com limpeza emocional"],
+        answer: 0 
+      },
+      { 
+        pombagira: "Pombagira Maria Farrapo",
+        q: "Como reconstruiria sua mente em momentos de caos?",
+        options: ["Encontrando sanidade na desordem", "Reconstrução com clareza", "Transformando caos em ordem"],
+        answer: 0 
+      },
+      { 
+        pombagira: "Pombagira Menina",
+        q: "Como você protegeria sua criança interior?",
+        options: ["Com pureza e renovação", "Com inocência preservada", "Com cuidado e doçura"],
+        answer: 0 
+      },
+      { 
+        pombagira: "Pombagira da Figueira",
+        q: "Como você honraria suas raízes e ancestralidade?",
+        options: ["Conectando-se com a terra", "Respeitando sabedoria milenar", "Honrando antepassados"],
+        answer: 0 
+      }
     ];
 
     const pombagiras = [
       { 
         name: "Maria Padilha", 
-        desc: "A Rainha das Pombagiras. Governa com sabedoria, força e autoridade absoluta. Ensina que o verdadeiro poder vem do respeito e da inteligência.", 
-        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/maria_padilha_the_vengeful_pombagira_stands_in.jpeg"
+        desc: "A Rainha das Pombagiras. Governa com sabedoria, força e autoridade absoluta. Ensina que o verdadeiro poder vem do respeito e da inteligência. Maria Padilha comanda com majestade e justiça, sendo a mais poderosa entre todas. Laroyê Padilha!", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/maria_padilha_the_vengeful_pombagira_stands_in.jpeg",
+        domain: "Comando/Realeza"
       },
       { 
         name: "Maria Mulambo", 
-        desc: "A senhora da cura e da humildade. Ela transforma o lixo em luxo espiritual, curando as feridas mais profundas da alma com seu manto de amor.", 
-        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/maria_mulambo_the_most_feared_pombagira_sits%20(3).jpeg"
+        desc: "A senhora da cura e da humildade. Ela transforma o lixo em luxo espiritual, curando as feridas mais profundas da alma com seu manto de amor. Maria Mulambo ensina que nas coisas mais simples encontramos a maior sabedoria. Laroyê Mulambo!", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/maria_mulambo_the_most_feared_pombagira_sits%20(3).jpeg",
+        domain: "Cura/Humildade"
       },
       { 
         name: "Maria Quitéria", 
-        desc: "A guerreira implacável. Defende seus protegidos com bravura e nunca foge de uma batalha. Sua espada é a justiça divina na terra.", 
-        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/a_pombagira_in_a_flowing_red_dress%20(1).jpeg"
+        desc: "A guerreira implacável. Defende seus protegidos com bravura e nunca foge de uma batalha. Sua espada é a justiça divina na terra. Maria Quitéria é força, proteção e coragem personificadas. Laroyê Quitéria!", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/a_pombagira_in_a_flowing_red_dress%20(1).jpeg",
+        domain: "Guerra/Proteção"
       },
       { 
         name: "Rosa Caveira", 
-        desc: "Guardiã da justiça e do ciclo da vida. Ela nos lembra que tudo tem um fim e um recomeço, atuando com seriedade no equilíbrio das almas.", 
-        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/a_pombagira_in_a_tattered_black_gown%20(8).jpeg"
+        desc: "Guardiã da justiça e do ciclo da vida. Ela nos lembra que tudo tem um fim e um recomeço, atuando com seriedade no equilíbrio das almas. Rosa Caveira é a senhora da transformação necessária. Laroyê Caveira!", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/a_pombagira_in_a_tattered_black_gown%20(8).jpeg",
+        domain: "Justiça/Morte"
       },
       { 
         name: "Dama da Noite", 
-        desc: "A senhora dos mistérios e da intuição. Atua sob o luar revelando verdades ocultas e protegendo aqueles que caminham na escuridão.", 
-        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/a_pombagira_in_a_tattered_purple_gown%20(2).jpeg"
+        desc: "A senhora dos mistérios e da intuição. Atua sob o luar revelando verdades ocultas e protegendo aqueles que caminham na escuridão. Dama da Noite ilumina o que está escondido. Laroyê Dama da Noite!", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/a_pombagira_in_a_tattered_purple_gown%20(2).jpeg",
+        domain: "Mistério/Oculto"
       },
       { 
         name: "Sete Saias", 
-        desc: "A pombagira da alegria e da intensidade. Com suas cores e dança, ela quebra as amarras da tristeza e traz movimento para a vida.", 
-        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/a_pombagira_in_a_tattered_red_gown%20(2).jpeg"
+        desc: "A pombagira da alegria e da intensidade. Com suas cores e dança, ela quebra as amarras da tristeza e traz movimento para a vida. Sete Saias celebra a existência com paixão. Laroyê Sete Saias!", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/a_pombagira_in_a_tattered_red_gown%20(2).jpeg",
+        domain: "Alegria/Intensidade"
       },
       { 
         name: "Pombagira Cigana", 
-        desc: "Dona da liberdade e da prosperidade. Abre caminhos com suas cartas e moedas, ensinando que a sorte favorece quem tem fé no destino.", 
-        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/transferir%20(29).jpg"
+        desc: "Dona da liberdade e da prosperidade. Abre caminhos com suas cartas e moedas, ensinando que a sorte favorece quem tem fé no destino. Pombagira Cigana dança com o vento do destino. Laroyê Cigana!", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/transferir%20(29).jpg",
+        domain: "Liberdade/Prosperidade"
       },
       { 
         name: "Maria Navalha", 
-        desc: "A mestre da malandragem e da proteção nas ruas. Astuta e corajosa, ela garante a sobrevivência e a vitória sobre os inimigos traiçoeiros.", 
-        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/transferir%20(24).jpg"
+        desc: "A mestre da malandragem e da proteção nas ruas. Astuta e corajosa, ela garante a sobrevivência e a vitória sobre os inimigos traiçoeiros. Maria Navalha é esperta como uma raposa. Laroyê Navalha!", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/transferir%20(24).jpg",
+        domain: "Malandragem/Rua"
       },
       { 
         name: "Pombagira da Praia", 
-        desc: "A força das águas que limpam a alma. Ela traz a calma do mar e o poder de purificação emocional para quem busca paz interior.", 
-        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/transferir%20(16).jpg"
+        desc: "A força das águas que limpam a alma. Ela traz a calma do mar e o poder de purificação emocional para quem busca paz interior. Pombagira da Praia lava as mágoas com suas ondas. Laroyê da Praia!", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/transferir%20(16).jpg",
+        domain: "Emoção/Limpeza (Água)"
       },
       { 
         name: "Maria Farrapo", 
-        desc: "Transformadora do caos em sanidade. Ela ajuda a reconstruir mentes fragmentadas e a encontrar clareza nos momentos de maior desespero.", 
-        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/transferir%20(11).jpg"
+        desc: "Transformadora do caos em sanidade. Ela ajuda a reconstruir mentes fragmentadas e a encontrar clareza nos momentos de maior desespero. Maria Farrapo costura a alma despedaçada. Laroyê Farrapo!", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/transferir%20(11).jpg",
+        domain: "Sanidade/Caos (Mental)"
       },
       { 
         name: "Pombagira Menina", 
-        desc: "A pureza do recomeço. Com sua energia doce e renovadora, ela cura traumas do passado e protege a inocência da nossa criança interior.", 
-        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/Image_fx%20(14).png"
+        desc: "A pureza do recomeço. Com sua energia doce e renovadora, ela cura traumas do passado e protege a inocência da nossa criança interior. Pombagira Menina guarda a pureza da alma. Laroyê Menina!", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/Image_fx%20(14).png",
+        domain: "Renovação/Inocência"
       },
       { 
         name: "Pombagira da Figueira", 
-        desc: "A guardiã da ancestralidade e das raízes. Conecta você com seus antepassados e com a sabedoria milenar da terra.", 
-        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/OIG4.vM77AVN.jpg"
+        desc: "A guardiã da ancestralidade e das raízes. Conecta você com seus antepassados e com a sabedoria milenar da terra. Pombagira da Figueira tem raízes profundas na sabedoria antiga. Laroyê da Figueira!", 
+        img: "https://raw.githubusercontent.com/alexialuzdeferro/pombagira-revelada/refs/heads/main/OIG4.vM77AVN.jpg",
+        domain: "Raiz/Ancestralidade (Terra)"
       }
     ];
 
@@ -235,8 +316,9 @@
         return;
       }
       const q = questions[currentQ];
+      document.getElementById('currentPombagira').innerText = `🔮 ${q.pombagira} 🔮`;
       document.getElementById('question').innerText = q.q;
-      document.getElementById('progressText').innerText = `Pergunta ${currentQ + 1} de 12`;
+      document.getElementById('progressText').innerText = `Pergunta ${currentQ + 1} de 12 - ${q.pombagira}`;
       document.getElementById('progressBar').style.width = `${((currentQ) / 12) * 100}%`;
       
       const opts = document.getElementById('options');
@@ -258,12 +340,12 @@
         score++;
         btn.classList.add('correct');
         document.getElementById('screenGlow').classList.add('correct');
+        document.getElementById('faithValue').innerText = score;
       } else {
         btn.classList.add('wrong');
         document.getElementById('screenGlow').classList.add('wrong');
       }
       
-      document.getElementById('faithValue').innerText = score;
       document.getElementById('axeValue').innerText = currentQ + 1;
 
       setTimeout(() => {
@@ -290,9 +372,11 @@
       document.getElementById('pombagiraName').innerText = `🌹 ${p.name} 🌹`;
       document.getElementById('pombagiraImage').src = p.img;
       document.getElementById('pombagiraDescription').innerHTML = `
+        <p style="font-size: 1.1rem; margin-bottom: 10px; color: var(--gold);"><strong>Domínio:</strong> ${p.domain}</p>
         <p style="font-size: 1.2rem; margin-bottom: 15px;">${p.desc}</p>
-        <p style="text-align: center; color: var(--gold); font-weight: bold; font-style: italic; margin-top: 20px;">
-          Laroyê! Que sua guardiã ilumine seus caminhos com força e axé!
+        <p style="text-align: center; color: var(--gold); font-weight: bold; font-style: italic; margin-top: 20px; border-top: 1px solid var(--gold); padding-top: 15px;">
+          Laroyê! Que ${p.name} ilumine seus caminhos com força e axé!<br>
+          Sua fé alcançou ${score} de 12 respostas alinhadas!
         </p>
       `;
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
