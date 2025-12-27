@@ -94,6 +94,47 @@
     .pombagira-description { background: rgba(0,0,0,0.8); padding: 25px; border-radius: 15px; line-height: 1.6; text-align: left; border-left: 6px solid var(--gold); }
     .restart-btn { margin-top: 25px; padding: 12px 30px; cursor: pointer; background: #333; color: #fff; border: 1px solid var(--gold); border-radius: 20px; }
 
+    /* ESTILO DO CONTADOR DISCRETO */
+    .access-counter {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(44, 62, 80, 0.2);
+      color: rgba(255, 255, 255, 0.5);
+      padding: 4px 10px;
+      border-radius: 15px;
+      font-size: 11px;
+      backdrop-filter: blur(20px);
+      border: 0.5px solid rgba(255, 255, 255, 0.05);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.3px;
+      transition: all 0.3s ease;
+      max-width: 130px;
+      opacity: 0.6;
+    }
+
+    .access-counter:hover {
+      background: rgba(44, 62, 80, 0.3);
+      color: rgba(255, 255, 255, 0.7);
+      opacity: 1;
+    }
+
+    .access-counter::before {
+      content: '🌹 ';
+      font-size: 10px;
+      font-weight: 300;
+      opacity: 0.7;
+    }
+
+    .access-counter.loading {
+      opacity: 0.4;
+    }
+
     @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
@@ -136,8 +177,121 @@
     </div>
   </div>
 
+  <!-- CONTADOR DE ACESSOS -->
+  <div class="access-counter loading" id="accessCounter">Consultas...</div>
+
   <script>
-    // Perguntas específicas para cada Pombagira
+    // Configuração do Supabase
+    const SUPABASE_URL = 'https://rbygxkbewzknvjjhxdvw.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJieWd4a2Jld3prbnZqamh4ZHZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwMDcxNjQsImV4cCI6MjA4MTU4MzE2NH0.YrHF9HEGo6yv9MyNsPzFgBhaAB1DRh2SLU8f7L6s1nY';
+
+    // ID ÚNICO PARA ESTA PÁGINA
+    const PAGE_ID = 'oraculo-12-pombagiras';
+
+    // Função para o contador de acessos
+    async function updateViewCounter() {
+      try {
+        const counterElement = document.getElementById('accessCounter');
+        
+        // 1. Busca o valor atual
+        const currentResponse = await fetch(
+          `${SUPABASE_URL}/rest/v1/page_views?page=eq.${encodeURIComponent(PAGE_ID)}&select=view_count`,
+          {
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        
+        if (!currentResponse.ok) {
+          throw new Error('Falha ao buscar contador');
+        }
+        
+        const currentData = await currentResponse.json();
+        
+        // Se não existe registro, cria um
+        if (!currentData || currentData.length === 0) {
+          const createResponse = await fetch(
+            `${SUPABASE_URL}/rest/v1/page_views`,
+            {
+              method: 'POST',
+              headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+              },
+              body: JSON.stringify({
+                page: PAGE_ID,
+                view_count: 1,
+                updated_at: new Date().toISOString()
+              })
+            }
+          );
+          
+          if (createResponse.ok) {
+            const createdData = await createResponse.json();
+            const newCount = createdData[0]?.view_count || 1;
+            counterElement.textContent = `${newCount} consultas`;
+            counterElement.classList.remove('loading');
+          } else {
+            throw new Error('Falha ao criar registro');
+          }
+          
+        } else {
+          // Se existe, incrementa
+          const currentCount = currentData[0]?.view_count || 0;
+          const newCount = currentCount + 1;
+          
+          const updateResponse = await fetch(
+            `${SUPABASE_URL}/rest/v1/page_views?page=eq.${encodeURIComponent(PAGE_ID)}`,
+            {
+              method: 'PATCH',
+              headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+              },
+              body: JSON.stringify({
+                view_count: newCount,
+                updated_at: new Date().toISOString()
+              })
+            }
+          );
+          
+          if (updateResponse.ok) {
+            const updatedData = await updateResponse.json();
+            const finalCount = updatedData[0]?.view_count || newCount;
+            counterElement.textContent = `${finalCount} consultas`;
+            counterElement.classList.remove('loading');
+          } else {
+            throw new Error('Falha ao atualizar contador');
+          }
+        }
+        
+      } catch (error) {
+        console.log('Erro no contador:', error);
+        
+        // Fallback: contador local no localStorage
+        const counterElement = document.getElementById('accessCounter');
+        let localCount = localStorage.getItem(`views_${PAGE_ID}`);
+        
+        if (localCount === null) {
+          localCount = '1';
+        } else {
+          localCount = (parseInt(localCount) + 1).toString();
+        }
+        
+        localStorage.setItem(`views_${PAGE_ID}`, localCount);
+        counterElement.textContent = `${localCount} consultas (local)`;
+        counterElement.classList.remove('loading');
+      }
+    }
+
+    // =========== CÓDIGO DO ORÁCULO ===========
     const questions = [
       { 
         pombagira: "Pombagira Maria Padilha",
@@ -385,6 +539,8 @@
     window.onload = () => {
       initParticles();
       loadQuestion();
+      // Inicia o contador quando a página carrega
+      updateViewCounter();
     };
   </script>
 </body>
